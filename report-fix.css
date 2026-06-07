@@ -169,3 +169,28 @@ span[style*="--neutral-500"] { color: var(--neutral-800) !important; }
         sig surface measured 4.49:1 — a hair under AA. Drop to the darker
         green-800 so the small italic text clears 4.5:1. ---- */
 .sig-block .role { color: var(--green-800) !important; }
+
+/* ===================== PART C — WIDTH UNIFORMITY (2026-06-07) =====================
+   Bug: the body-map / trends / AI / future-tests / screening / footer sections (and
+   their section-heading labels) sit OUTSIDE the 1280px .page-wrap, so they render
+   full-width (measured 1920 at a 1920 viewport) while the top of the report is a
+   1280 centered column. Constrain them all to the SAME 1280 centered column so the
+   whole interactive report is one uniform width — the dark body-map/AI sections
+   become contained cards just like the "10 Vital Parameters" card already is. */
+.body-section,
+.bodymap-v2-wrap,
+.bodymap-card,
+.trends-section,
+.ai-section,
+.future-tests-section,
+.screening-section,
+.report-footer,
+.section-heading {
+  max-width: 1280px !important;
+  width: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+}
