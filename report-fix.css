@@ -185,7 +185,11 @@ span[style*="--neutral-500"] { color: var(--neutral-800) !important; }
 .future-tests-section,
 .screening-section,
 .report-footer,
-.section-heading {
+.section-heading,
+.critical-spotlight,
+#panels-container,
+.signatures,
+.disclaimer {
   max-width: 1280px !important;
   width: auto !important;
   margin-left: auto !important;
@@ -194,3 +198,9 @@ span[style*="--neutral-500"] { color: var(--neutral-800) !important; }
   right: auto !important;
   transform: none !important;
 }
+
+/* The top card (.page-wrap → header + report-body) was 1240, i.e. 20px narrower
+   each side than the 1280 section cards, because .page-wrap has padding:20px.
+   Drop its horizontal padding so the top card is a full 1280 too, aligned with
+   every other section. (Vertical padding kept.) */
+.page-wrap { padding-left: 0 !important; padding-right: 0 !important; }
