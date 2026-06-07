@@ -1,0 +1,171 @@
+/* ============================================================
+   report-fix.css  —  loaded LAST, overrides everything.
+
+   PART A (original): hardcodes the two "premium dark" sections'
+   backgrounds with literal deep-green hex (NO css-vars), so their
+   light text is always legible. Fixes a browser case where the
+   var-based --hero-* gradient didn't resolve and the sections
+   rendered light (white text -> invisible).
+
+   PART B (contrast pass, 2026-06-06): brings EVERY remaining
+   text/bg pair to WCAG-AA (>=4.5:1). Principle = preserve the
+   design, only adjust color LIGHTNESS for legibility. Clinical
+   zone color-coding is kept (green/amber/orange/red); we only
+   swap mid-tone text to the dark zone "-text" shade on light
+   tints, force white on solid fills, and darken muted greys.
+   ============================================================ */
+
+/* ===================== PART A ===================== */
+
+.ai-section {
+  background: linear-gradient(135deg, #021500 0%, #062700 50%, #0b3304 100%) !important;
+  color: #eaf6e6 !important;
+}
+
+/* Body-map card: REMOVE the light radial highlight (it lightened
+   the right side, sinking the rail/title/sub/credit text below AA)
+   and end the linear gradient on a darker green so the WHOLE card
+   reads as a solid dark surface. */
+.bodymap-card {
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(8,40,12,.55), transparent 60%),
+    linear-gradient(168deg, #021500 0%, #051f00 50%, #0a3203 100%) !important;
+}
+
+/* ===================== PART B — CONTRAST ===================== */
+
+/* ---- Body-map: full near-white text on the forced-dark card ---- */
+.bodymap-card .bodymap-title { color: #ffffff !important; }
+.bodymap-card .bodymap-eyebrow,
+.bodymap-card .bodymap-sub,
+.bodymap-card .rail-title,
+.bodymap-card .rail-name,
+.bodymap-card .rail-organ,
+.bodymap-card .rail-zone,
+.bodymap-card .credit,
+.bodymap-card .legend-item { color: #ffffff !important; }
+/* SVG organ tag labels: fill is already light (#EAF6E6); align the
+   `color` property too so it reads light on the dark card. */
+.bodymap-card .hs-tag { color: #EAF6E6 !important; fill: #EAF6E6 !important; }
+
+/* ---- Summary pills (colored text on light same-hue tint) ---- */
+.summary-pill.pill-normal { color: var(--zone-normal-text) !important; }
+.summary-pill.pill-warn   { color: var(--zone-borderline-text) !important; }
+.summary-pill.pill-alert  { color: var(--zone-alert-text) !important; }
+.summary-pill.pill-critical { color: var(--zone-critical-text) !important; }
+
+/* ---- Recommendation pills ---- */
+.rec-pill.recommended { color: var(--zone-normal-text) !important; }
+.rec-pill.strong      { color: var(--zone-normal-text) !important; }
+.rec-pill.priority    { color: var(--zone-alert-text) !important; }
+.rec-pill.basic       { color: var(--neutral-800) !important; }
+
+/* ---- Trend badges (chips) ---- */
+.trend-badge.down   { color: var(--zone-normal-text) !important; }
+.trend-badge.up     { color: var(--zone-alert-text) !important; }
+.trend-badge.stable { color: var(--neutral-800) !important; }
+
+/* ---- Status badges + range-zone labels (zone-tinted chips) ---- */
+.status-badge,
+.range-zone-label { color: var(--zone-normal-text) !important; }
+.status-badge.warn, .range-zone-label.warn,
+.status-badge.border, .range-zone-label.border { color: var(--zone-borderline-text) !important; }
+.status-badge.alert, .range-zone-label.alert,
+.status-badge.alert1, .range-zone-label.alert1 { color: var(--zone-alert-text) !important; }
+.status-badge.crit, .range-zone-label.crit,
+.status-badge.alert2, .range-zone-label.alert2 { color: var(--zone-critical-text) !important; }
+
+/* ---- Timeline frequency pills ---- */
+.tl-card.routine .tl-freq { color: var(--zone-normal-text) !important; }
+.tl-card.soon    .tl-freq { color: var(--zone-alert-text) !important; }
+.tl-card.urgent  .tl-freq { color: var(--zone-critical-text) !important; }
+
+/* ---- Critical tags ---- */
+.crit-tag        { color: var(--zone-critical-text) !important; }
+.crit-tag.warn   { color: var(--zone-alert-text) !important; }
+.crit-tag.border { color: var(--zone-borderline-text) !important; }
+
+/* ---- Trend "now" value + delta (on near-white card) ---- */
+.trend-current .now.zone-normal { color: var(--zone-normal-text) !important; }
+.trend-current .now.zone-border { color: var(--zone-borderline-text) !important; }
+.trend-current .now.zone-alert1 { color: var(--zone-alert-text) !important; }
+.trend-current .now.zone-alert2 { color: var(--zone-critical-text) !important; }
+.trend-current .delta.down   { color: var(--zone-normal-text) !important; }
+.trend-current .delta.up     { color: var(--zone-alert-text) !important; }
+.trend-current .delta.stable { color: var(--neutral-800) !important; }
+
+/* ---- Test-table parameter values ---- */
+.t-value.flag-OK   { color: var(--zone-normal-text) !important; }
+.t-value.flag-H    { color: var(--zone-alert-text) !important; }
+.t-value.flag-L    { color: var(--zone-borderline-text) !important; }
+.t-value.flag-CRIT { color: var(--zone-critical-text) !important; }
+
+/* ---- Crit-value big numbers (orange on white) ---- */
+.crit-value      { color: var(--zone-alert-text) !important; }
+.crit-value.down { color: var(--zone-borderline-text) !important; }
+
+/* ---- Hero score ring: dark "72" on the SOLID green gauge -> white;
+        green "Health Score" label on the light-green hero -> dark ---- */
+.hero-score-ring .hs-num   { color: #ffffff !important; }
+.hero-score-ring .hs-label { color: var(--text-strong) !important; }
+
+/* ---- Hero greeting "Hello, Rajesh" (green on light-green) -> dark ---- */
+.hero-info h2 .greeting { color: var(--text-strong) !important; }
+
+/* ---- Hero snapshot stat counts (17/7/4/0) — mid zone on light pill ---- */
+.snap-pill.normal .num { color: var(--zone-normal-text) !important; }
+.snap-pill.border .num { color: var(--zone-borderline-text) !important; }
+.snap-pill.alert1 .num { color: var(--zone-alert-text) !important; }
+.snap-pill.alert2 .num { color: var(--zone-critical-text) !important; }
+
+/* ---- Comorbid / "Risk-factor profile detected" banner ----
+   Lighten the muted red/orange wash AND darken the red strong text. */
+.comorbid-banner {
+  background: linear-gradient(135deg, rgba(255,243,241,.96), rgba(255,243,237,.96)) !important;
+}
+.comorbid-banner .cb-text strong { color: var(--zone-critical-text) !important; }
+
+/* ---- "Final & Verified" status strong (green on white) -> dark green.
+        It is inline-styled `color: var(--zone-normal)`; an external
+        !important rule beats a non-!important inline style. ---- */
+.report-meta strong[style*="--zone-normal"] { color: var(--zone-normal-text) !important; }
+
+/* ---- "Parameters Needing Attention" H2 (red on very light red) ---- */
+.critical-header h2 { color: var(--zone-critical-text) !important; }
+
+/* ---- Lifestyle items: green title text on DARK green cards -> brighter green ---- */
+.ai-section .life-card .body strong { color: var(--green-200) !important; }
+
+/* ---- Inline legend swatches ("orange"/"grey") in the trends intro ---- */
+span[style*="--zone-alert"]  { color: var(--zone-alert-text) !important; }
+span[style*="--neutral-500"] { color: var(--neutral-800) !important; }
+
+/* ---- Section-heading ordinal "01..04": white on the green tile.
+        It is large (>=24, but here 16-22) & bold; bump bg darker so
+        white passes AA at normal-text threshold too. ---- */
+.section-heading .num {
+  background: linear-gradient(135deg, #1B6500, #277F08) !important;
+  color: #ffffff !important;
+}
+
+/* ---- Primary buttons: white on green solid -> darken green ---- */
+.btn.btn-primary { background: #1B6500 !important; color: #ffffff !important; }
+
+/* ---- Screening-table "40-55 yrs" age column header: white on a
+        green gradient. Darken the gradient so white clears 4.5:1.
+        Needs to match the existing high-specificity !important rule. ---- */
+.screen-table thead th.user-age {
+  background: linear-gradient(135deg, #1B6500 0%, #006536 100%) !important;
+  color: #ffffff !important;
+}
+
+/* ---- Hero "vs last test: +4 ↑" strong (green on light-green hero) ---- */
+.hero-score-trend strong { color: var(--zone-normal-text) !important; }
+
+/* ---- Critical-spotlight range reference "Optimal: < 100" strong ---- */
+.crit-range strong { color: var(--zone-normal-text) !important; }
+
+/* ---- Signature-block role caption: italic green (#277F08) on the light
+        sig surface measured 4.49:1 — a hair under AA. Drop to the darker
+        green-800 so the small italic text clears 4.5:1. ---- */
+.sig-block .role { color: var(--green-800) !important; }
