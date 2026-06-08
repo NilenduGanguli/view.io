@@ -1,0 +1,13 @@
+{"ts":"2026-06-06T11:03:20.927Z","cmd":"viewport","args":"1240x900","origin":"about:blank","durationMs":4,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:03:20.978Z","cmd":"goto","args":"http://127.0.0.1:8788/swatch.html?v=2","origin":"http://127.0.0.1:8788/swatch.html?v=2","durationMs":7,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:03:21.210Z","cmd":"wait","args":"--load","origin":"http://127.0.0.1:8788/swatch.html?v=2","durationMs":190,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:03:21.867Z","cmd":"screenshot","args":"/tmp/ziffy_ref/swatch2-light.png","origin":"http://127.0.0.1:8788/swatch.html?v=2","durationMs":80,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:03:21.910Z","cmd":"js","args":"document.documentElement.dataset.theme='dark'","origin":"http://127.0.0.1:8788/swatch.html?v=2","durationMs":1,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:03:22.436Z","cmd":"screenshot","args":"/tmp/ziffy_ref/swatch2-dark.png","origin":"http://127.0.0.1:8788/swatch.html?v=2","durationMs":51,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:03:22.479Z","cmd":"console","args":"--errors","origin":"http://127.0.0.1:8788/swatch.html?v=2","durationMs":0,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:08:55.379Z","cmd":"viewport","args":"1240x900","origin":"http://127.0.0.1:8788/swatch.html?v=2","durationMs":1,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:08:55.432Z","cmd":"goto","args":"http://127.0.0.1:8788/swatch.html?v=3","origin":"http://127.0.0.1:8788/swatch.html?v=3","durationMs":5,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:08:55.480Z","cmd":"wait","args":"--load","origin":"http://127.0.0.1:8788/swatch.html?v=3","durationMs":0,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:08:56.102Z","cmd":"screenshot","args":"/tmp/ziffy_ref/swatch3-light.png","origin":"http://127.0.0.1:8788/swatch.html?v=3","durationMs":60,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:08:56.154Z","cmd":"js","args":"document.documentElement.dataset.theme='dark'","origin":"http://127.0.0.1:8788/swatch.html?v=3","durationMs":1,"status":"ok","hasCookies":false,"mode":"launched"}
+{"ts":"2026-06-06T11:08:56.668Z","cmd":"screenshot","args":"/tmp/ziffy_ref/swatch3-dark.png","origin":"http://127.0.0.1:8788/swatch.html?v=3","durationMs":55,"status":"ok","hasCookies":false,"mode":"launched"}

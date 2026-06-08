@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZiffyHealth · Diagnostic Lab Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- =====================================================================
+     INLINED DESIGN TOKENS (copied from report-final.html #inlined-tokens,
+     extended with the legacy aliases the header banner needs so this file
+     is fully self-contained — external tokens.css fails on file://).
+     ===================================================================== -->
+<style id="inlined-tokens">
+:root {
+  /* ZiffyHealth ramps */
+  --green-50:#E4FFDE;--green-100:#D0F9C7;--green-200:#B3ECA7;--green-300:#90D980;--green-400:#6EC35B;--green-500:#51AD3B;--green-600:#3B9821;--green-700:#277F08;--green-800:#1B6500;--green-900:#124A00;--green-950:#0A3400;
+  --emerald-50:#E0FFE9;--emerald-100:#C4FBD5;--emerald-200:#A2EEBA;--emerald-300:#76DC9B;--emerald-400:#47C77C;--emerald-500:#01B163;--emerald-600:#009954;--emerald-700:#007F45;--emerald-800:#006536;--emerald-900:#004A26;--emerald-950:#003419;
+  --red-50:#FFF3F1;--red-100:#FFE4E0;--red-200:#FFCBC3;--red-300:#FFA99C;--red-400:#FF7F6F;--red-500:#FF4A3C;--red-600:#E9261F;--red-700:#C70307;--red-800:#A10003;--red-900:#780002;--red-950:#560001;
+  --neutral-50:#F4F7F3;--neutral-100:#E9ECE8;--neutral-200:#D7DBD6;--neutral-300:#C0C4BF;--neutral-400:#A8ACA7;--neutral-500:#929691;--neutral-600:#7E817D;--neutral-700:#676B66;--neutral-800:#525551;--neutral-900:#3B3E3A;--neutral-950:#282B28;
+  --amber-50:#FFF4E7;--amber-100:#FFE7CA;--amber-200:#FFD097;--amber-300:#F6B45B;--amber-400:#E5991C;--amber-500:#CA8400;--amber-600:#AE7100;--amber-700:#915D00;--amber-800:#744A00;--amber-900:#563500;--amber-950:#3C2400;
+  --orange-50:#FFF3ED;--orange-100:#FFE5D9;--orange-200:#FFCDB5;--orange-300:#FFAC82;--orange-400:#FF833F;--orange-500:#EB6700;--orange-600:#CC5900;--orange-700:#AA4800;--orange-800:#883900;--orange-900:#652800;--orange-950:#481A00;
+
+  --hero-from:#021500; --hero-via:#062700; --hero-to:#103E04;
+  --bg:#F4F7F3; --bg-subtle:#E9ECE8;
+  --surface:#FFFFFF; --surface-muted:#F4F7F3; --surface-sunken:#E9ECE8;
+  --border:#D7DBD6; --border-strong:#C0C4BF; --divider:#D7DBD6;
+  --text-strong:#3B3E3A; --text:#525551; --text-muted:#7E817D; --text-subtle:#929691; --text-inverse:#FFFFFF;
+  --primary:#277F08; --primary-emphasis:#3B9821; --primary-bright:#51AD3B; --primary-hover:#1B6500; --primary-active:#124A00;
+  --primary-subtle:#E4FFDE; --primary-subtle-text:#1B6500; --on-primary:#FFFFFF;
+  --secondary:#009954; --secondary-subtle:#E0FFE9; --on-secondary:#FFFFFF;
+  --accent:#51AD3B; --focus:#51AD3B; --ink-deep:#103E04;
+  --success:#277F08; --danger:#C70307; --warning:#915D00; --info:#3B9821;
+
+  /* clinical zone scale */
+  --zone-normal:#3B9821; --zone-normal-solid:#277F08; --zone-normal-bg:#E4FFDE; --zone-normal-text:#1B6500;
+  --zone-borderline:#AE7100; --zone-borderline-solid:#915D00; --zone-borderline-bg:#FFF4E7; --zone-borderline-text:#744A00;
+  --zone-alert:#CC5900; --zone-alert-solid:#AA4800; --zone-alert-bg:#FFF3ED; --zone-alert-text:#883900;
+  --zone-critical:#E9261F; --zone-critical-solid:#C70307; --zone-critical-bg:#FFF3F1; --zone-critical-text:#A10003;
+
+  /* legacy aliases used by the header banner (originally from tokens.css) */
+  --ziffy-green:#277F08; --ziffy-green-light:#6EC35B; --ziffy-green-bg:#E4FFDE;
+  --cardio-blue:#1976D2; --cardio-cyan:#00BCD4; --cardio-blue-glow:#29B6F6;
+  --bg-card:#ffffff; --bg-soft:#f5f8fc;
+  --text-dark:#0B1929; --text-mid:#4A5568; --border-soft:#E2E8F0;
+  --shadow-sm:0 2px 8px rgba(11,25,41,0.06);
+  --shadow-md:0 8px 24px rgba(11,25,41,0.08);
+  --shadow-lg:0 20px 50px rgba(11,25,41,0.12);
+
+  --font-display:'Sora',system-ui,sans-serif;
+  --font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+</style>
+
+<style>
+/* =====================================================================
+   BASE
+   ===================================================================== */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg-subtle);font-family:var(--font-body);color:var(--text-strong);-webkit-font-smoothing:antialiased;line-height:1.5}
+.page-wrap{max-width:920px;margin:24px auto;background:#fff;border-radius:24px;box-shadow:var(--shadow-lg)}
+
+/* =====================================================================
+   HEADER BANNER  (dark green — bg HARDCODED, not var-only)
+   ===================================================================== */
+.report-header{
+  background:linear-gradient(135deg,#021500 0%,#062700 50%,#103E04 100%);
+  border-radius:24px 24px 0 0; padding:16px 36px 20px;
+  position:relative; overflow:hidden; box-shadow:var(--shadow-lg);
+}
+.report-header::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 20% 30%,rgba(46,125,50,0.18),transparent 40%),
+            radial-gradient(circle at 80% 70%,rgba(39,127,8,0.20),transparent 45%);
+  pointer-events:none}
+.report-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,#277F08 0%,#00BCD4 50%,#1976D2 100%)}
+.header-grid{display:grid;grid-template-columns:100px 1fr 100px;align-items:start;gap:20px;position:relative;z-index:2}
+.logo{width:92px;height:92px;border-radius:50%;background:rgba(255,255,255,0.04);padding:3px;box-shadow:0 0 30px rgba(59,152,33,0.25);justify-self:center;margin-top:-2px}
+.logo-left{justify-self:start}.logo-right{justify-self:end}
+.logo img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.header-center{text-align:center;padding-top:14px}
+.brand-line{font-family:var(--font-display);font-size:34px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px;line-height:1.1;white-space:nowrap}
+.brand-line .ziffy{color:#fff}
+.brand-line .health{color:var(--ziffy-green-light)}
+.brand-line .pwr{font-size:13px;font-weight:400;color:rgba(228,255,222,0.62);font-style:italic;margin:0 10px;vertical-align:middle}
+.brand-line .cardio{color:rgba(228,255,222,0.85);font-size:22px;vertical-align:middle;font-weight:700}
+.tagline{font-family:var(--font-display);font-size:14px;color:#FFD54F;font-style:italic;margin-bottom:12px;letter-spacing:0.3px}
+.credentials{display:grid;grid-template-columns:repeat(4,1fr);gap:0;max-width:760px;margin:0 auto;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:50px;padding:4px}
+.cred-badge{font-size:10px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;color:#EAF6E6;padding:6px 8px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-right:1px solid rgba(255,255,255,0.10);text-align:center;line-height:1.2}
+.cred-badge:last-child{border-right:none}
+.cred-badge .dot{width:6px;height:6px;border-radius:50%;background:#00BCD4;box-shadow:0 0 6px #00BCD4;flex-shrink:0}
+
+/* =====================================================================
+   ACTION BAR
+   ===================================================================== */
+.action-bar{background:#fff;padding:14px 36px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-bottom:1px solid var(--border-soft);box-shadow:var(--shadow-sm)}
+.report-meta-inline{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--text)}
+.report-meta-inline strong{color:var(--text-strong);font-weight:700}
+.report-meta-inline .verified{color:var(--zone-normal-text);display:inline-flex;align-items:center;gap:5px}
+.actions{display:flex;gap:8px}
+.btn{padding:9px 18px;border:none;border-radius:10px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all .2s ease}
+.btn .ic{width:16px;height:16px}
+.btn-primary{background:linear-gradient(135deg,#1B6500,#277F08);color:#fff;box-shadow:0 4px 12px rgba(39,127,8,.30)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(39,127,8,.40)}
+.btn-secondary{background:var(--bg-soft);color:var(--text-strong);border:1px solid var(--border-soft)}
+.btn-secondary:hover{background:#fff;border-color:var(--primary);color:var(--primary)}
+
+/* =====================================================================
+   BODY
+   ===================================================================== */
+.report-body{background:#fff;border-radius:0 0 24px 24px;padding:30px 36px 40px}
+.report-title-block{text-align:center;padding:10px 0 22px;border-bottom:2px dashed var(--border-soft);margin-bottom:26px}
+.report-title-block .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--primary);font-weight:600;margin-bottom:6px}
+.report-title-block h1{font-family:var(--font-display);font-size:27px;font-weight:800;letter-spacing:-0.5px;color:var(--text-strong);margin-bottom:6px}
+.report-title-block .sub{color:var(--text-muted);font-size:13.5px}
+.report-title-block .sub strong{color:var(--text-strong)}
+
+/* section headings */
+.section-heading{display:flex;align-items:center;gap:14px;margin:34px 0 4px}
+.section-heading .num{font-family:var(--font-display);font-size:15px;font-weight:800;color:#fff;background:linear-gradient(135deg,#1B6500,#277F08);width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-heading h2{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--text-strong);letter-spacing:-0.3px}
+.section-sub{color:var(--text-muted);font-size:13px;font-style:italic;margin:4px 0 18px 48px}
+.rule{height:2px;background:linear-gradient(90deg,var(--green-700),var(--border-soft) 70%,transparent);border:none;margin:6px 0 0}
+
+/* =====================================================================
+   PATIENT BLOCK
+   ===================================================================== */
+.patient-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border-soft);border-radius:14px;overflow:hidden;margin-bottom:8px}
+.patient-cell{padding:13px 18px;border-right:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft)}
+.patient-cell:nth-child(3n){border-right:none}
+.patient-cell .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-muted);margin-bottom:4px}
+.patient-cell .val{font-size:14px;font-weight:600;color:var(--text-strong)}
+.patient-cell .val.accent{color:var(--green-700)}
+.patient-cell .val .verified-inline{color:var(--zone-normal-text);font-weight:700;display:inline-flex;align-items:center;gap:4px}
+
+/* =====================================================================
+   AT-A-GLANCE SUMMARY
+   ===================================================================== */
+.glance-counts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.count-card{border-radius:14px;padding:16px 14px;text-align:center;border:1px solid var(--border-soft);position:relative;overflow:hidden}
+.count-card .num{font-family:var(--font-display);font-size:34px;font-weight:800;line-height:1}
+.count-card .lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-top:6px}
+.count-card.c-normal{background:var(--zone-normal-bg);border-color:var(--green-200)}
+.count-card.c-normal .num,.count-card.c-normal .lbl{color:var(--zone-normal-text)}
+.count-card.c-border{background:var(--zone-borderline-bg);border-color:var(--amber-200)}
+.count-card.c-border .num,.count-card.c-border .lbl{color:var(--zone-borderline-text)}
+.count-card.c-alert{background:var(--zone-alert-bg);border-color:var(--orange-200)}
+.count-card.c-alert .num,.count-card.c-alert .lbl{color:var(--zone-alert-text)}
+.count-card.c-critical{background:var(--zone-critical-bg);border-color:var(--red-200)}
+.count-card.c-critical .num,.count-card.c-critical .lbl{color:var(--zone-critical-text)}
+
+.glance-banner{display:flex;gap:12px;align-items:flex-start;background:var(--surface-muted);border:1px solid var(--border-soft);border-left:4px solid var(--primary);border-radius:10px;padding:14px 16px;margin-bottom:24px;font-size:13px;color:var(--text)}
+.glance-banner .ic{width:20px;height:20px;color:var(--primary);flex-shrink:0;margin-top:1px}
+.glance-banner strong{color:var(--text-strong)}
+
+/* abnormal rich cards */
+.abn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.abn-card{border:1px solid var(--border-soft);border-radius:16px;padding:16px 18px;background:#fff;box-shadow:var(--shadow-sm);position:relative;page-break-inside:avoid;break-inside:avoid;border-top:4px solid var(--zone-borderline)}
+.abn-card.zc-alert{border-top-color:var(--zone-alert)}
+.abn-card.zc-critical{border-top-color:var(--zone-critical)}
+.abn-card.zc-normal{border-top-color:var(--zone-normal)}
+.abn-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.abn-title{font-family:var(--font-display);font-size:14.5px;font-weight:700;color:var(--text-strong)}
+.abn-title .sub{display:block;font-family:var(--font-body);font-size:10.5px;font-weight:500;color:var(--text-muted);margin-top:1px}
+.abn-profile-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);background:var(--surface-sunken);padding:3px 8px;border-radius:50px}
+.abn-value{display:flex;align-items:baseline;gap:6px;margin:6px 0 12px}
+.abn-value .v{font-family:var(--font-display);font-size:32px;font-weight:800;line-height:1}
+.abn-value .u{font-size:13px;color:var(--text-muted);font-weight:600}
+.abn-value .arrow{font-size:22px;font-weight:800;margin-right:2px}
+.abn-note{font-size:11.5px;color:var(--text);margin-top:10px;line-height:1.45}
+.abn-note strong{color:var(--text-strong)}
+
+/* =====================================================================
+   PER-PROFILE TABLES
+   ===================================================================== */
+.profile-section{margin-bottom:24px;page-break-inside:auto}
+.profile-bar{background:linear-gradient(135deg,#103E04,#1B6500);color:#fff;border-radius:10px 10px 0 0;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.profile-bar .p-name{font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase}
+.profile-bar .p-desc{font-size:11.5px;color:rgba(228,255,222,0.78);font-style:italic}
+.profile-summary{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.summary-pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:50px;text-transform:uppercase;letter-spacing:0.4px}
+.summary-pill.pill-normal{background:var(--zone-normal-bg);color:var(--zone-normal-text)}
+.summary-pill.pill-warn{background:var(--zone-borderline-bg);color:var(--zone-borderline-text)}
+.summary-pill.pill-alert{background:var(--zone-alert-bg);color:var(--zone-alert-text)}
+.summary-pill.pill-critical{background:var(--zone-critical-bg);color:var(--zone-critical-text)}
+
+.test-table{width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--border-soft);border-top:none;border-radius:0 0 10px 10px;overflow:hidden}
+.test-table thead th{background:var(--surface-muted);padding:10px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);border-bottom:2px solid var(--border-soft)}
+.test-table thead th.c{text-align:center}
+.test-table tbody tr{border-bottom:1px solid var(--surface-sunken);page-break-inside:avoid;break-inside:avoid}
+.test-table tbody tr:last-child{border-bottom:none}
+.test-table td{padding:12px 14px;vertical-align:middle}
+.test-table td.c{text-align:center}
+.t-name{font-weight:600;color:var(--text-strong);font-size:13px}
+.t-name .desc{font-size:10.5px;font-weight:400;color:var(--text-muted);margin-top:2px}
+.t-name .cond{font-size:10px;font-weight:600;color:var(--green-700);margin-top:3px;font-family:var(--font-mono)}
+.t-value{text-align:center;font-family:var(--font-mono);font-weight:700;font-size:15px;white-space:nowrap}
+.t-value.flag-H{color:var(--zone-alert-text)}
+.t-value.flag-L{color:var(--zone-borderline-text)}
+.t-value.flag-CRIT{color:var(--zone-critical-text)}
+.t-value.flag-OK{color:var(--zone-normal-text)}
+.t-value.flag-POS{color:var(--zone-critical-text)}
+.t-value.flag-IND{color:var(--zone-borderline-text)}
+.t-unit,.t-range{text-align:center;color:var(--text-muted);font-size:11.5px;font-family:var(--font-mono);line-height:1.4}
+.t-range .alt{display:block;font-size:9.5px;color:var(--text-subtle);margin-top:2px}
+.t-bar-cell{padding:10px 14px;min-width:190px;width:210px}
+
+/* status badge */
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px}
+.status-badge.ok{background:var(--zone-normal-bg);color:var(--zone-normal-text)}
+.status-badge.warn{background:var(--zone-borderline-bg);color:var(--zone-borderline-text)}
+.status-badge.alert{background:var(--zone-alert-bg);color:var(--zone-alert-text)}
+.status-badge.crit{background:var(--zone-critical-bg);color:var(--zone-critical-text)}
+
+/* =====================================================================
+   RANGE VISUALIZERS  (the renderer engine output)
+   ===================================================================== */
+/* generic continuous range-bar with marker */
+.rv{display:flex;flex-direction:column;gap:5px}
+.range-bar{position:relative;height:8px;border-radius:5px;overflow:visible}
+.range-bar.grad-symmetric{background:linear-gradient(90deg,
+   var(--zone-critical) 0%,var(--zone-alert) 10%,var(--zone-borderline) 20%,
+   var(--zone-normal) 34%,var(--zone-normal) 66%,
+   var(--zone-borderline) 80%,var(--zone-alert) 90%,var(--zone-critical) 100%)}
+.range-bar.grad-lowgood{background:linear-gradient(90deg,
+   var(--zone-normal) 0%,var(--zone-normal) 55%,var(--zone-borderline) 72%,var(--zone-alert) 86%,var(--zone-critical) 100%)}
+.range-marker{position:absolute;top:-5px;width:4px;height:18px;background:var(--text-strong);border-radius:2px;transform:translateX(-50%);box-shadow:0 0 0 2.5px #fff,0 2px 5px rgba(0,0,0,0.3);z-index:3}
+.range-marker::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--text-strong)}
+.range-cut{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--text-strong);opacity:.55;transform:translateX(-50%);z-index:2}
+.range-cut::after{content:attr(data-l);position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:8.5px;color:var(--text-muted);white-space:nowrap}
+.rv-scale{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:8.5px;color:var(--text-subtle)}
+.rv-scale .lo{text-align:left}.rv-scale .hi{text-align:right}
+
+/* segmented multi-band bar */
+.seg-bar{display:flex;height:18px;border-radius:6px;overflow:hidden;border:1px solid var(--border-soft);position:relative}
+.seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.2px;color:#fff;text-align:center;line-height:1;padding:0 2px;position:relative;border-right:1px solid rgba(255,255,255,.5)}
+.seg:last-child{border-right:none}
+.seg.s-normal{background:var(--zone-normal)}
+.seg.s-border{background:var(--zone-borderline)}
+.seg.s-alert{background:var(--zone-alert)}
+.seg.s-critical{background:var(--zone-critical)}
+.seg.active{outline:2.5px solid var(--text-strong);outline-offset:-2.5px;z-index:2;box-shadow:0 0 0 1px #fff inset}
+.seg-marker{position:absolute;top:-6px;width:3px;height:6px;background:var(--text-strong);transform:translateX(-50%);z-index:4;border-radius:2px}
+.seg-marker::after{content:'▼';position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:7px;color:var(--text-strong);line-height:1}
+.seg-scale{display:flex;font-family:var(--font-mono);font-size:8px;color:var(--text-subtle);justify-content:space-between;margin-top:3px}
+
+/* qualitative 3-zone strip */
+.qual-strip{display:flex;height:16px;border-radius:6px;overflow:hidden;border:1px solid var(--border-soft);position:relative}
+.qz{flex:1;display:flex;align-items:center;justify-content:center;font-size:7.5px;font-weight:700;text-transform:uppercase;color:#fff;letter-spacing:0.2px}
+.qz.q-neg{background:var(--zone-normal)}
+.qz.q-ind{background:var(--zone-borderline)}
+.qz.q-pos{background:var(--zone-critical)}
+.qz.active{outline:2.5px solid var(--text-strong);outline-offset:-2.5px;z-index:2}
+.qual-result{font-family:var(--font-display);font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.qual-result.r-neg{color:var(--zone-normal-text)}
+.qual-result.r-ind{color:var(--zone-borderline-text)}
+.qual-result.r-pos{color:var(--zone-critical-text)}
+.qual-index{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);margin-bottom:5px}
+
+/* percentile mini-table */
+.pct-table{width:100%;border-collapse:collapse;font-size:10px;font-family:var(--font-mono);margin-top:2px}
+.pct-table th,.pct-table td{padding:3px 6px;text-align:center;border:1px solid var(--border-soft)}
+.pct-table th{background:var(--surface-muted);font-size:8.5px;text-transform:uppercase;letter-spacing:0.3px;color:var(--text-muted);font-weight:700}
+.pct-table tr.active-row td{background:var(--zone-normal-bg);font-weight:700;color:var(--zone-normal-text)}
+.pct-table .you{background:var(--text-strong);color:#fff;border-radius:3px;padding:1px 5px;font-weight:700;display:inline-block}
+
+/* panel grouped sub-rows */
+.panel-block{display:flex;flex-direction:column;gap:0;border:1px dashed var(--border-strong);border-radius:8px;overflow:hidden;background:var(--surface-muted)}
+.panel-sub{display:grid;grid-template-columns:1.3fr 0.8fr 1fr 1.4fr 0.9fr;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--surface-sunken);font-size:11.5px}
+.panel-sub:last-child{border-bottom:none}
+.panel-sub .ps-name{font-weight:700;color:var(--text-strong)}
+.panel-sub .ps-val{font-family:var(--font-mono);font-weight:700;text-align:center}
+.panel-sub .ps-ref{font-family:var(--font-mono);color:var(--text-muted);font-size:10.5px;text-align:center}
+.panel-sub .ps-bar{min-width:90px}
+
+/* gestational compact reference */
+.gest-ref{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px}
+.gest-chip{font-family:var(--font-mono);font-size:8px;padding:2px 5px;border-radius:4px;background:var(--surface-muted);border:1px solid var(--border-soft);color:var(--text-muted)}
+.gest-chip.active{background:var(--zone-normal-bg);border-color:var(--green-300);color:var(--zone-normal-text);font-weight:700}
+
+/* =====================================================================
+   SIGNATURES + DISCLAIMER + FOOTER
+   ===================================================================== */
+.signatures{display:grid;grid-template-columns:repeat(2,1fr);gap:40px;margin:40px 0 8px;page-break-inside:avoid;break-inside:avoid}
+.sig-block{text-align:center}
+.sig-line{height:1px;background:var(--text-strong);margin:30px auto 8px;width:78%}
+.sig-block .name{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--text-strong)}
+.sig-block .qual{font-size:11.5px;color:var(--text-muted);margin-top:1px}
+.sig-block .role{font-size:11px;color:var(--green-800);font-style:italic;margin-top:2px}
+
+.disclaimer{background:var(--surface-muted);border:1px solid var(--border-soft);border-radius:12px;padding:16px 18px;margin-top:24px;page-break-inside:avoid;break-inside:avoid}
+.disclaimer h4{font-family:var(--font-display);font-size:13px;color:var(--text-strong);display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.disclaimer h4 .ic{width:16px;height:16px;color:var(--zone-borderline-text)}
+.disclaimer ol{margin-left:18px;font-size:10.5px;color:var(--text);line-height:1.55}
+.disclaimer li{margin-bottom:5px}
+.disclaimer strong{color:var(--text-strong)}
+
+.report-footer{background:linear-gradient(135deg,#103E04,#1B6500);border-radius:0 0 24px 24px;padding:22px 36px 18px;margin-top:6px;color:#EAF6E6}
+.footer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.14)}
+.footer-item .icon{display:inline-flex;color:#7EE0A0;margin-bottom:6px}
+.footer-item .icon .ic{width:18px;height:18px}
+.footer-item .lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#A8D8B4;margin-bottom:3px}
+.footer-item .val{font-size:11.5px;color:#EAF6E6;line-height:1.5}
+.footer-bar{text-align:center;font-size:11px;color:#C8E6CF;padding-top:14px}
+.footer-bar strong{color:#fff}
+
+/* on-screen page number note */
+.screen-note{text-align:center;font-size:11px;color:var(--text-subtle);padding:14px;font-family:var(--font-mono)}
+
+/* =====================================================================
+   ENTRANCE ANIMATIONS (screen only)
+   ===================================================================== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.anim{opacity:0;animation:fadeUp .5s ease forwards}
+.anim.d1{animation-delay:.05s}.anim.d2{animation-delay:.12s}.anim.d3{animation-delay:.20s}.anim.d4{animation-delay:.28s}
+
+/* =====================================================================
+   RESPONSIVE
+   ===================================================================== */
+@media (max-width:760px){
+  .page-wrap{margin:0;border-radius:0}
+  .header-grid{grid-template-columns:64px 1fr 64px;gap:12px}
+  .logo{width:64px;height:64px}
+  .brand-line{font-size:22px;white-space:normal}
+  .credentials{grid-template-columns:repeat(2,1fr);border-radius:14px}
+  .cred-badge{border-right:none;border-bottom:1px solid rgba(255,255,255,0.08)}
+  .patient-grid{grid-template-columns:repeat(2,1fr)}
+  .patient-cell:nth-child(3n){border-right:1px solid var(--border-soft)}
+  .patient-cell:nth-child(2n){border-right:none}
+  .glance-counts{grid-template-columns:repeat(2,1fr)}
+  .abn-grid{grid-template-columns:1fr}
+  .signatures{grid-template-columns:1fr;gap:20px}
+  .footer-grid{grid-template-columns:repeat(2,1fr)}
+  .report-header,.action-bar,.report-body,.report-footer{padding-left:18px;padding-right:18px}
+}
+
+/* =====================================================================
+   PRINT  —  A4, color-exact, clean pagination
+   ===================================================================== */
+@page{
+  size:A4;
+  margin:14mm 14mm 18mm;
+  @bottom-center{
+    content:"ZiffyHealth Diagnostic Report  ·  Page " counter(page) " of " counter(pages);
+    font-family:'JetBrains Mono',monospace; font-size:8pt; color:#7E817D;
+  }
+  @bottom-right{
+    content:"Aapke Swasthya Kaa Sachha Sathee";
+    font-family:'JetBrains Mono',monospace; font-size:7.5pt; color:#A8ACA7;
+  }
+}
+@media print{
+  html,body{background:#fff !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  .page-wrap{max-width:none;margin:0;border-radius:0;box-shadow:none}
+  .anim{opacity:1 !important;animation:none !important}
+  .no-print{display:none !important}
+  .action-bar{display:none !important}
+  .screen-note{display:none !important}
+  .report-header{border-radius:0;box-shadow:none;padding:8px 0 12px;page-break-after:avoid}
+  .report-body{border-radius:0;box-shadow:none;padding:14px 0 0}
+  .report-footer{border-radius:0}
+  .logo{width:64px;height:64px;box-shadow:none}
+  .brand-line{font-size:26px}
+  .section-heading{margin-top:18px;page-break-after:avoid}
+  .profile-bar{page-break-after:avoid}
+  .profile-section{page-break-inside:auto}
+  .test-table tbody tr{page-break-inside:avoid}
+  .abn-card,.count-card,.glance-banner,.signatures,.disclaimer,.patient-grid{page-break-inside:avoid;break-inside:avoid}
+  .glance-counts{page-break-inside:avoid}
+  /* keep each profile section from orphaning its header */
+  .profile-section{page-break-before:auto}
+  .abn-grid{gap:12px}
+  /* tighten shadows for print */
+  .abn-card,.count-card{box-shadow:none}
+}
+
+/* =====================================================================
+   CONTRAST PASS (loaded LAST, overrides above) — every text/bg pair to
+   WCAG-AA >=4.5:1. Principle: preserve the design, only adjust color
+   LIGHTNESS. Mid-tone greys -> darker neutral; white-on-zone-fill labels
+   -> the darker zone "-solid" fills (designed to carry white text);
+   clinical color-coding (green/amber/orange/red) is preserved.
+   ===================================================================== */
+/* ---- muted grey body text on white -> darker neutral ---- */
+.report-title-block .sub,
+.section-sub,
+.patient-cell .lbl,
+.t-name .desc,
+.t-unit, .t-range,
+.qual-index,
+.abn-title .sub,
+.abn-value .u,
+.sig-block .qual,
+.screen-note{ color: var(--neutral-700) !important; }
+.rv-scale, .rv-scale .lo, .rv-scale .hi,
+.t-range .alt,
+.seg-scale,
+.gest-chip{ color: var(--neutral-700) !important; }
+/* ---- subtle/muted text on tinted surfaces -> darker ---- */
+.test-table thead th,
+.pct-table th,
+.panel-sub .ps-ref,
+.abn-profile-tag{ color: var(--neutral-800) !important; }
+/* ---- segmented band-bar + qualitative zone labels: white text needs
+        the darker SOLID zone fills to clear 4.5:1 at 8px bold ---- */
+.seg.s-normal{   background: var(--zone-normal-solid)   !important; }
+.seg.s-border{   background: var(--zone-borderline-solid) !important; }
+.seg.s-alert{    background: var(--zone-alert-solid)    !important; }
+.seg.s-critical{ background: var(--zone-critical-solid) !important; }
+.qz.q-neg{ background: var(--zone-normal-solid)   !important; }
+.qz.q-ind{ background: var(--zone-borderline-solid) !important; }
+.qz.q-pos{ background: var(--zone-critical-solid) !important; }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- ============ HEADER BANNER ============ -->
+  <header class="report-header">
+    <div class="header-grid">
+      <div class="logo logo-left"><img src="assets/brand-1-d898a4cf.jpg" alt="ZiffyHealth"></div>
+      <div class="header-center">
+        <div class="brand-line">
+          <span class="ziffy">Ziffy</span><span class="health">Health</span>
+          <span class="pwr">powered by</span>
+          <span class="cardio">CardioQ.ai</span>
+        </div>
+        <div class="tagline">"Aapke Swasthya Kaa Sachha Sathee"</div>
+        <div class="credentials">
+          <span class="cred-badge"><span class="dot"></span>AI-Interpreted</span>
+          <span class="cred-badge"><span class="dot"></span>NABL Accredited</span>
+          <span class="cred-badge"><span class="dot"></span>ABDM Compliant</span>
+          <span class="cred-badge"><span class="dot"></span>ISO 15189:2022</span>
+        </div>
+      </div>
+      <div class="logo logo-right"><img src="assets/brand-2-dfc0a7e3.jpg" alt="CardioQ.ai"></div>
+    </div>
+  </header>
+
+  <!-- ============ ACTION BAR (screen only) ============ -->
+  <div class="action-bar no-print">
+    <div class="report-meta-inline">
+      <span>Report ID: <strong id="m-reportid">—</strong></span>
+      <span>Generated: <strong id="m-generated">—</strong></span>
+      <span>Status: <strong class="verified">
+        <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        Final &amp; Verified</strong></span>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="window.print()">
+        <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+        Print A4</button>
+      <button class="btn btn-primary" onclick="window.print()">
+        <svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+        Generate PDF</button>
+    </div>
+  </div>
+
+  <!-- ============ BODY ============ -->
+  <main class="report-body">
+
+    <div class="report-title-block">
+      <div class="eyebrow">Diagnostic Laboratory Report</div>
+      <h1>Comprehensive Diagnostic Results</h1>
+      <div class="sub">Analyzer: <strong>KIN Diagnostics</strong> immunoassay menu · Interpreted by CardioQ.ai · <span id="m-paneldesc">—</span></div>
+    </div>
+
+    <!-- Patient block -->
+    <div class="patient-grid" id="patient-grid"></div>
+
+    <!-- ===== At-a-Glance ===== -->
+    <div class="section-heading"><span class="num">01</span><h2>At-a-Glance Summary</h2></div>
+    <hr class="rule">
+    <div class="section-sub">Result distribution across all profiles, with abnormal findings highlighted for review.</div>
+
+    <div class="glance-counts" id="glance-counts"></div>
+    <div class="glance-banner" id="glance-banner"></div>
+    <div class="abn-grid" id="abn-grid"></div>
+
+    <!-- ===== Detailed profiles ===== -->
+    <div class="section-heading"><span class="num">02</span><h2>Detailed Results by Profile</h2></div>
+    <hr class="rule">
+    <div class="section-sub">Parameter-by-parameter analysis with reference ranges, clinical-zone indicators and status flags.</div>
+
+    <div id="profiles"></div>
+
+    <!-- ===== Signatures ===== -->
+    <div class="signatures">
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="name">Dr. Priya Mehta</div>
+        <div class="qual">MD (Pathology), DNB</div>
+        <div class="role">Consultant Pathologist · MMC-78421</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="name">Dr. Vikram Iyer</div>
+        <div class="qual">MD, DM (Cardiology)</div>
+        <div class="role">Medical Director · CardioQ.ai</div>
+      </div>
+    </div>
+
+    <!-- ===== Disclaimer ===== -->
+    <div class="disclaimer">
+      <h4><svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Disclaimer, Terms &amp; Conditions</h4>
+      <ol>
+        <li><strong>Test integrity:</strong> Report generated from the specimen provided to ZiffyHealth Diagnostics and analysed on KIN Diagnostics immunoassay analyzers using NABL-accredited methods, with CardioQ.ai's AI-interpretation engine.</li>
+        <li><strong>Advisory nature:</strong> AI-generated interpretations are advisory only and DO NOT constitute a medical diagnosis. They must NOT replace consultation with a qualified, registered medical practitioner.</li>
+        <li><strong>Reference ranges:</strong> Population-based ranges vary by age, sex, ethnicity, pregnancy, medication and physiological state. Borderline / Alert / Critical flags require clinical correlation.</li>
+        <li><strong>Qualitative assays:</strong> Cut-off-index results (Dengue, COVID-19) are qualitative; Indeterminate results should be repeated after 5–7 days. Negative results do not fully exclude early infection.</li>
+        <li><strong>Data privacy:</strong> ZiffyHealth complies with ABDM standards and India's DPDP Act 2023. Patient data is encrypted, consented, and never sold to third parties.</li>
+        <li><strong>Discrepancy reporting:</strong> Any discrepancy should be reported to <strong>info@ziffytech.com</strong> within 48 hours of report delivery. Results pertain only to the specimen received and processed.</li>
+      </ol>
+    </div>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="report-footer">
+    <div class="footer-grid">
+      <div class="footer-item">
+        <span class="icon"><svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <div class="lbl">Lab Address</div>
+        <div class="val">303, Pallazo, Hadapsar<br>Pune - 411028</div>
+      </div>
+      <div class="footer-item">
+        <span class="icon"><svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92"/></svg></span>
+        <div class="lbl">24×7 Support</div>
+        <div class="val">+91 70665 32000<br>info@ziffytech.com</div>
+      </div>
+      <div class="footer-item">
+        <span class="icon"><svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg></span>
+        <div class="lbl">Digital Report</div>
+        <div class="val">www.ziffytech.com<br>App: ZiffyHealth (iOS / Android)</div>
+      </div>
+      <div class="footer-item">
+        <span class="icon"><svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <div class="lbl">Accreditations</div>
+        <div class="val">NABL · ABDM · NITI Aayog<br>ISO 15189:2022</div>
+      </div>
+    </div>
+    <div class="footer-bar">
+      © 2026 <strong>ZiffyHealth Diagnostics</strong> · Powered by <strong>CardioQ.ai</strong> · Aapke Swasthya Kaa Sachha Sathee · Made in India
+    </div>
+  </footer>
+
+  <div class="screen-note no-print">On screen this is one continuous report — use <strong>Print A4 / Generate PDF</strong> for paginated A4 output with running page numbers.</div>
+
+</div>
+
+<!-- ====== DATA (inlined for a fully self-contained file) ====== -->
+<script>
+/* =====================================================================
+   ZiffyHealth static lab report — DATA
+   (a) CATALOG: every KIN test, keyed by id, with profile + reference
+       SHAPE + range data + unit. Ranges verified against
+       references/KIN_Reference_Range_Sheet.pdf.
+   (b) PATIENT + RESULTS: one sample patient whose results exercise
+       EVERY renderer shape + a panel + several abnormals.
+
+   Reference SHAPES (the renderer switches on `shape`):
+     'cutoff'      single upper cut-off (Normal below, High above)
+     'range'       low–high reference interval
+     'bands'       >=2 ordered risk/status bands (segmented bar)
+     'qualitative' cut-off-index -> Negative/Indeterminate/Positive
+     'conditional' range selected by sex / age / phase / condition
+     'gestational' range selected by LMP week (time-series)
+     'percentile'  age x percentile grid
+     'panel'       group of sub-markers, each its own (mini) shape
+   ===================================================================== */
+
+const PROFILES = {
+  CARDIAC:   { name: 'Cardiac Markers',        desc: 'Myocardial injury, ischemia & heart-failure risk' },
+  DIABETES:  { name: 'Diabetes & Renal',       desc: 'Glycemic control & early kidney function' },
+  HORMONE:   { name: 'Hormone / Thyroid',      desc: 'Thyroid axis & adrenal function' },
+  FERTILITY: { name: 'Fertility & Reproductive', desc: 'Reproductive hormones & ovarian reserve' },
+  INFECTION: { name: 'Infection & Inflammation', desc: 'Sepsis, acute-phase & serology' },
+  CANCER:    { name: 'Tumor Markers',          desc: 'Oncology screening & monitoring' },
+  RA:        { name: 'Rheumatoid Arthritis',   desc: 'Autoimmune / inflammatory arthritis' },
+  OTHER:     { name: 'Nutritional & Other',    desc: 'Iron stores, vitamin D & allergy' },
+};
+
+const CATALOG = {
+  /* ===================== CARDIAC ===================== */
+  TNI:        { profile:'CARDIAC', name:'Troponin I (TnI)', desc:'Cardiac-specific myocardial injury', unit:'ng/mL',
+                shape:'cutoff', cutoff:0.3, dir:'low-good', working:[0.10,50] },
+  TNI_PLUS:   { profile:'CARDIAC', name:'Troponin I Plus', desc:'High-sensitivity TnI', unit:'ng/mL',
+                shape:'cutoff', cutoff:0.3, dir:'low-good', working:[0.01,15] },
+  TNT:        { profile:'CARDIAC', name:'Troponin T (TnT)', desc:'Cardiac troponin T', unit:'pg/mL',
+                shape:'cutoff', cutoff:17, dir:'low-good', working:[10,20000] },
+  CKMB:       { profile:'CARDIAC', name:'CK-MB', desc:'Creatine-kinase MB isoenzyme', unit:'ng/mL',
+                shape:'cutoff', cutoff:7, dir:'low-good', working:[3,100] },
+  DDIMER:     { profile:'CARDIAC', name:'D-Dimer', desc:'Fibrin degradation / thrombosis', unit:'ng/mL',
+                shape:'cutoff', cutoff:500, dir:'low-good', working:[50,10000] },
+  NTPROBNP:   { profile:'CARDIAC', name:'NT-proBNP', desc:'Heart-failure marker (95th pct)', unit:'pg/mL',
+                shape:'cutoff', cutoff:125, dir:'low-good', working:[10,30000] },
+  MYO:        { profile:'CARDIAC', name:'Myoglobin', desc:'Early muscle/cardiac injury', unit:'ng/mL',
+                shape:'cutoff', cutoff:70, dir:'low-good', working:[5,500] },
+  HSCRP:      { profile:'CARDIAC', name:'hs-CRP', desc:'Cardiovascular inflammation risk', unit:'mg/L',
+                shape:'bands', bands:[
+                  {label:'Low Risk', max:1.0, zone:'normal'},
+                  {label:'Average', min:1.0, max:3.0, zone:'border'},
+                  {label:'High Risk', min:3.0, zone:'alert'} ],
+                scaleMax:6 },
+  ST2:        { profile:'CARDIAC', name:'ST2', desc:'Cardiac fibrosis / HF prognosis', unit:'ng/mL',
+                shape:'cutoff', cutoff:35, dir:'low-good', working:[3.1,200] },
+  CTM:        { profile:'CARDIAC', name:'Cardiac Triple Marker', desc:'TnI + CK-MB + Myoglobin', unit:'',
+                shape:'panel', members:[
+                  {name:'Troponin I Plus', unit:'ng/mL', cutoff:0.3, working:[0.01,15]},
+                  {name:'CK-MB', unit:'ng/mL', cutoff:7.0, working:[3,100]},
+                  {name:'Myoglobin', unit:'ng/mL', cutoff:70, working:[5,500]} ] },
+
+  /* ===================== CANCER ===================== */
+  PSA:        { profile:'CANCER', name:'PSA', desc:'Prostate-specific antigen (serum)', unit:'ng/mL',
+                shape:'cutoff', cutoff:3.8, dir:'low-good', altCut:'Liquid <4.0', working:[0.1,100] },
+  AFP:        { profile:'CANCER', name:'AFP', desc:'Alpha-fetoprotein (serum)', unit:'ng/mL',
+                shape:'cutoff', cutoff:7.8, dir:'low-good', altCut:'Liquid ≤10.9', working:[5,350] },
+  CEA:        { profile:'CANCER', name:'CEA', desc:'Carcinoembryonic antigen', unit:'ng/mL',
+                shape:'conditional', by:'smoking', cutoffs:{
+                  'Non-smoker':{cutoff:4.0}, 'Smoker':{cutoff:5.0} }, base:'Serum <4.7', working:[1,500] },
+  IFOB:       { profile:'CANCER', name:'iFOB', desc:'Faecal occult blood (10 µg Hb/g)', unit:'ng/mL',
+                shape:'cutoff', cutoff:100, dir:'low-good', working:[25,1000] },
+
+  /* ===================== DIABETES ===================== */
+  HBA1C:      { profile:'DIABETES', name:'HbA1c', desc:'3-month average glycemia (NGSP, ADA-staged)', unit:'%',
+                shape:'bands', bands:[
+                  {label:'Normal', max:5.7, zone:'normal'},
+                  {label:'Pre-diabetes', min:5.7, max:6.4, zone:'border'},
+                  {label:'Diabetes', min:6.5, zone:'alert'} ],
+                scaleMax:9, labRef:'Lab ref: 4.5–6.5 %', alt:'26–48 mmol/mol' },
+  MALB:       { profile:'DIABETES', name:'Microalbumin', desc:'Early diabetic nephropathy', unit:'mg/L',
+                shape:'cutoff', cutoff:18, dir:'low-good', working:[2,300] },
+  CYSC:       { profile:'DIABETES', name:'Cystatin C', desc:'Renal filtration (age-specific)', unit:'mg/L',
+                shape:'conditional', by:'age', cutoffs:{
+                  '19–49 yrs':{low:0.53,high:0.92}, '50–70 yrs':{low:0.58,high:1.02} },
+                working:[0.1,7.5] },
+
+  /* ===================== HORMONE ===================== */
+  TSH:        { profile:'HORMONE', name:'TSH', desc:'Thyroid-stimulating hormone', unit:'µIU/mL',
+                shape:'range', low:0.4, high:4.0, dir:'both', working:[0.1,100] },
+  T3:         { profile:'HORMONE', name:'Total T3', desc:'Triiodothyronine', unit:'ng/mL',
+                shape:'range', low:0.8, high:2.01, dir:'both', alt:'1.24–3.09 nmol/L', working:[0.5,5] },
+  T4:         { profile:'HORMONE', name:'Total T4', desc:'Thyroxine', unit:'nmol/L',
+                shape:'range', low:60, high:120, dir:'both', working:[10.23,300] },
+  CORT:       { profile:'HORMONE', name:'Cortisol', desc:'Adrenal — diurnal (AM/PM)', unit:'nmol/L',
+                shape:'conditional', by:'timeOfDay', cutoffs:{
+                  'Morning (AM)':{low:151.58,high:793.38}, 'Afternoon (PM)':{low:67.9,high:473.22} },
+                working:[50,800] },
+  FSH:        { profile:'HORMONE', name:'FSH', desc:'Follicle-stimulating hormone', unit:'mIU/mL',
+                shape:'conditional', by:'fshCtx', cutoffs:{
+                  'Male':{low:1.27,high:19.26},
+                  'Follicular phase':{low:3.85,high:8.78},
+                  'Mid-cycle':{low:4.54,high:22.51},
+                  'Luteal phase':{low:1.79,high:5.12},
+                  'Postmenopausal':{low:16.74,high:113.59} }, working:[1,100] },
+
+  /* ===================== FERTILITY ===================== */
+  PROG:       { profile:'FERTILITY', name:'Progesterone', desc:'Luteal / pregnancy support', unit:'nmol/L',
+                shape:'conditional', by:'progCtx', cutoffs:{
+                  'Male':{low:0.46,high:6.55},
+                  'Mid-follicular':{low:0.99,high:4.83},
+                  'Mid-luteal':{low:16.4,high:59.02},
+                  'Postmenopausal':{low:0.25,high:2.48,loInclusive:true},
+                  '1st Trimester':{low:15.04,high:161.35},
+                  '2nd Trimester':{low:61.72,high:144.05} }, working:[4.45,127.2] },
+  BHCG:       { profile:'FERTILITY', name:'β-hCG', desc:'Pregnancy — by LMP gestational week', unit:'mIU/mL',
+                shape:'gestational', weeks:[
+                  {wk:'3', low:5, high:50}, {wk:'4', low:5, high:426},
+                  {wk:'5', low:18, high:7340}, {wk:'6', low:1080, high:56500},
+                  {wk:'7–8', low:7650, high:229000}, {wk:'9–12', low:25700, high:288000},
+                  {wk:'13–16', low:13300, high:254000}, {wk:'17–24', low:4060, high:165400},
+                  {wk:'25–40', low:3640, high:117000} ], working:[5,50000] },
+  LH:         { profile:'FERTILITY', name:'LH', desc:'Luteinising hormone', unit:'mIU/mL',
+                shape:'conditional', by:'lhCtx', cutoffs:{
+                  'Male':{low:1.24,high:8.62},
+                  'Follicular phase':{low:2.12,high:10.89},
+                  'Mid-cycle':{low:19.18,high:103.03},
+                  'Luteal phase':{low:1.20,high:12.86},
+                  'Postmenopausal':{low:10.87,high:58.64} }, working:[1.0,100] },
+  PRL:        { profile:'FERTILITY', name:'Prolactin (PRL)', desc:'Lactotroph hormone', unit:'ng/mL',
+                shape:'conditional', by:'sex', cutoffs:{
+                  'Male':{low:3,high:25}, 'Female':{low:5,high:35} }, working:[1,100] },
+  TESTO:      { profile:'FERTILITY', name:'Testosterone', desc:'Total testosterone', unit:'ng/mL',
+                shape:'conditional', by:'sex', cutoffs:{
+                  'Male':{low:1.88,high:8.94}, 'Female':{low:0.51,high:1.16} }, working:[0.5,12] },
+  AMH:        { profile:'FERTILITY', name:'AMH', desc:'Anti-Müllerian hormone — ovarian reserve', unit:'ng/mL',
+                shape:'percentile', working:[0.02,15],
+                grid:[
+                  {age:'20–24', range:'0.81–11.56', p5:1.38, p50:4.23, p95:9.07},
+                  {age:'25–29', range:'0.73–11.32', p5:1.19, p50:3.46, p95:8.17},
+                  {age:'30–34', range:'0.57–9.05',  p5:0.87, p50:2.75, p95:7.12},
+                  {age:'35–40', range:'0.52–8.52',  p5:0.51, p50:2.19, p95:6.76},
+                  {age:'>40',   range:'—',           p5:0.07, p50:0.75, p95:4.62} ] },
+
+  /* ===================== INFECTION ===================== */
+  CRP:        { profile:'INFECTION', name:'CRP', desc:'C-reactive protein (acute phase)', unit:'mg/L',
+                shape:'cutoff', cutoff:10, dir:'low-good', working:[0.5,300] },
+  PCT:        { profile:'INFECTION', name:'Procalcitonin (PCT)', desc:'Bacterial sepsis severity', unit:'ng/mL',
+                shape:'bands', bands:[
+                  {label:'Healthy', max:0.05, zone:'normal'},
+                  {label:'Unlikely', min:0.05, max:0.5, zone:'border'},
+                  {label:'Possible', min:0.5, max:2.0, zone:'alert'},
+                  {label:'Sepsis likely', min:2.0, max:10, zone:'critical'},
+                  {label:'Severe', min:10, zone:'critical'} ],
+                scaleMax:12, scaleLog:true },
+  ASO:        { profile:'INFECTION', name:'ASO', desc:'Anti-streptolysin O', unit:'IU/mL',
+                shape:'cutoff', cutoff:166, dir:'low-good', working:[25,800] },
+  IL6:        { profile:'INFECTION', name:'IL-6', desc:'Interleukin-6 (cytokine)', unit:'pg/mL',
+                shape:'cutoff', cutoff:7, dir:'low-good', working:[2,2500] },
+  DENG_IGM:   { profile:'INFECTION', name:'Dengue IgM/IgG', desc:'Dengue antibody (cut-off index)', unit:'index',
+                shape:'qualitative', negMax:0.9, posMin:1.1 },
+  DENG_NS1:   { profile:'INFECTION', name:'Dengue NS1 Ag', desc:'Dengue NS1 antigen (cut-off index)', unit:'index',
+                shape:'qualitative', negMax:0.9, posMin:1.1 },
+  COVID_AB:   { profile:'INFECTION', name:'COVID-19 Ab', desc:'SARS-CoV-2 antibody (cut-off index)', unit:'index',
+                shape:'qualitative', negMax:0.9, posMin:1.1 },
+  COVID_AG:   { profile:'INFECTION', name:'COVID-19 Ag', desc:'SARS-CoV-2 antigen (cut-off index)', unit:'index',
+                shape:'qualitative', negMax:1.0, posMin:1.0, twoZone:true },
+  CALPRO:     { profile:'INFECTION', name:'Calprotectin', desc:'Faecal — gut inflammation', unit:'mg/kg',
+                shape:'bands', bands:[
+                  {label:'Negative', max:50, zone:'normal'},
+                  {label:'Borderline', min:50, max:100, zone:'border'},
+                  {label:'Positive', min:100, zone:'alert'} ],
+                scaleMax:200 },
+
+  /* ===================== RHEUMATOID ARTHRITIS ===================== */
+  RF:         { profile:'RA', name:'RF IgM', desc:'Rheumatoid factor (IgM)', unit:'IU/mL',
+                shape:'cutoff', cutoff:15, dir:'low-good', working:[8,200] },
+  ANTICCP:    { profile:'RA', name:'Anti-CCP', desc:'Cyclic citrullinated peptide Ab', unit:'U/mL',
+                shape:'cutoff', cutoff:5.0, dir:'low-good', working:[3.5,300] },
+
+  /* ===================== OTHER ===================== */
+  FERR:       { profile:'OTHER', name:'Ferritin', desc:'Iron stores (sex-specific)', unit:'ng/mL',
+                shape:'conditional', by:'sex', cutoffs:{
+                  'Female':{low:20,high:250}, 'Male':{low:30,high:350} }, working:[10,1000] },
+  VITD:       { profile:'OTHER', name:'Vitamin D (25-OH)', desc:'Vitamin D status', unit:'ng/mL',
+                shape:'bands', bands:[
+                  {label:'Deficient', max:10, zone:'critical'},
+                  {label:'Insufficient', min:10, max:30, zone:'border'},
+                  {label:'Sufficient', min:30, max:100, zone:'normal'} ],
+                scaleMax:100, lowBad:true },
+  IGE:        { profile:'OTHER', name:'Total IgE', desc:'Allergy marker (age-specific)', unit:'IU/mL',
+                shape:'conditional', by:'ageGroup', cutoffs:{
+                  '<1 yr':{cutoff:13.6}, '1–5 yrs':{cutoff:43.3}, '6–9 yrs':{cutoff:80.1},
+                  '10–15 yrs':{cutoff:209.2}, '>16 yrs':{cutoff:88.4} }, working:[1,1000] },
+};
+
+/* =====================================================================
+   SAMPLE PATIENT  — context drives conditional/percentile/gestational
+   selection. We DELIBERATELY mark this patient as pregnant (for β-hCG +
+   progesterone trimester ranges) AND give her an AMH age band, an
+   age group, AM cortisol draw, follicular-phase cycle context, etc.
+   ===================================================================== */
+
+const PATIENT = {
+  name: 'Mrs. Ananya R. Iyer',
+  id: 'ZH-2026-061204',
+  age: 32,
+  sex: 'Female',
+  doctor: 'Dr. Anita Deshmukh, MD',
+  collected: '06 Jun 2026, 07:48 AM',
+  sampleType: 'Venous Blood (Fasting 10h)',
+  barcode: 'ZH060626074810',
+  lab: 'Hadapsar, Pune',
+  generated: '06 Jun 2026, 06:24 PM',
+  reportId: 'ZH-2026-061204',
+  panelDesc: '32 biomarkers · 8 profiles · AI-Interpreted',
+  // selection context
+  ctx: {
+    sex: 'Female',
+    smoking: 'Non-smoker',
+    ageGroup: '>16 yrs',
+    age: 32,
+    cystatinAge: '19–49 yrs',
+    timeOfDay: 'Morning (AM)',
+    fshCtx: 'Follicular phase',
+    progCtx: '1st Trimester',
+    lhCtx: 'Follicular phase',
+    amhBand: '30–34',
+    gestWeek: '7–8',
+    pregnant: true,
+  },
+};
+
+/* Results: value keyed by catalog id. Order within a profile is layout order.
+   A mix of normal + abnormal so the summary + abnormal cards have content. */
+const RESULTS = [
+  // CARDIAC
+  { id:'TNI',      value:0.02 },                 // normal
+  { id:'CKMB',     value:9.4 },                  // HIGH (abnormal)  -> cutoff shape
+  { id:'NTPROBNP', value:88 },                   // normal
+  { id:'HSCRP',    value:4.2 },                  // High Risk band   -> bands shape
+  { id:'CTM',      value:{ 'Troponin I Plus':0.04, 'CK-MB':9.4, 'Myoglobin':52 } }, // panel (CK-MB high)
+
+  // DIABETES & RENAL
+  { id:'HBA1C',    value:6.9 },                  // HIGH             -> range shape
+  { id:'MALB',     value:12 },                   // normal
+  { id:'CYSC',     value:0.81 },                 // normal           -> conditional(age)
+
+  // HORMONE / THYROID
+  { id:'TSH',      value:5.6 },                  // HIGH             -> range shape
+  { id:'T3',       value:1.4 },                  // normal
+  { id:'T4',       value:96 },                   // normal
+  { id:'CORT',     value:402 },                  // normal           -> conditional(AM/PM)
+  { id:'FSH',      value:6.2 },                  // normal           -> conditional(phase)
+
+  // FERTILITY
+  { id:'BHCG',     value:84000 },                // in-range for wk 7-8 -> gestational shape
+  { id:'PROG',     value:88.0 },                 // normal 1st trimester -> conditional
+  { id:'LH',       value:5.1 },                  // normal
+  { id:'PRL',      value:22 },                   // normal           -> conditional(sex)
+  { id:'TESTO',    value:0.7 },                  // normal
+  { id:'AMH',      value:1.9 },                  // percentile shape (low-normal for 30-34)
+
+  // INFECTION
+  { id:'CRP',      value:18 },                   // HIGH             -> cutoff
+  { id:'PCT',      value:0.32 },                 // "Unlikely" band  -> bands(log)
+  { id:'IL6',      value:4.1 },                  // normal
+  { id:'DENG_NS1', value:1.6 },                  // POSITIVE         -> qualitative
+  { id:'DENG_IGM', value:0.7 },                  // Negative         -> qualitative
+  { id:'COVID_AG', value:0.4 },                  // Negative (2-zone) -> qualitative
+  { id:'CALPRO',   value:38 },                   // Negative band
+
+  // CANCER
+  { id:'PSA',      value:0.6 },                  // normal (shown; female PSA low)
+  { id:'CEA',      value:2.1 },                  // normal           -> conditional(smoking)
+  { id:'AFP',      value:4.0 },                  // normal
+
+  // RHEUMATOID
+  { id:'RF',       value:9 },                    // normal
+  { id:'ANTICCP',  value:2.1 },                  // normal
+
+  // OTHER
+  { id:'FERR',     value:42 },                   // normal           -> conditional(sex)
+  { id:'VITD',     value:8 },                    // Deficient (CRITICAL low) -> bands(lowBad)
+  { id:'IGE',      value:62 },                   // normal           -> conditional(ageGroup)
+];
+</script>
+<!-- ====== RENDER ENGINE (inlined) ====== -->
+<script>
+/* =====================================================================
+   ZiffyHealth static lab report — RENDER ENGINE
+   One catalog entry + a value -> a fully-rendered table row, an
+   abnormal card, and a contribution to the at-a-glance counts.
+   Handles all 7 reference shapes + panels.
+
+   NOTE: all interpolated text passes through esc(); the source data is
+   local + trusted (no user input, no network). innerHTML is used purely
+   as the template-assembly mechanism for this static document.
+   ===================================================================== */
+(function () {
+  'use strict';
+
+  // ---- helpers -------------------------------------------------------
+  const $ = (s, r) => (r || document).querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const fmt = (n) => {
+    if (n === null || n === undefined) return '—';
+    if (typeof n !== 'number') return esc(n);
+    if (Math.abs(n) >= 1000) return n.toLocaleString('en-IN');
+    return (Math.round(n * 100) / 100).toString();
+  };
+  // map an internal zone key -> {status text, badge class, value flag}
+  const ZONE = {
+    normal:   { label:'Normal',     badge:'ok',   flag:'OK'   },
+    border:   { label:'Borderline', badge:'warn', flag:'L'    },
+    alert:    { label:'High',       badge:'alert',flag:'H'    },
+    critical: { label:'Critical',   badge:'crit', flag:'CRIT' },
+  };
+
+  // position (0..100) of a value on a log/linear scale [0..max]
+  function posOnScale(v, max, log) {
+    if (log) {
+      const lv = Math.log10(Math.max(v, 0.01) + 0.01);
+      const lmax = Math.log10(max + 0.01);
+      const lmin = Math.log10(0.01 + 0.01);
+      return clamp(((lv - lmin) / (lmax - lmin)) * 100, 0, 100);
+    }
+    return clamp((v / max) * 100, 0, 100);
+  }
+
+  // ---- continuous range-bar (range + cutoff shapes) ------------------
+  function rangeBar(value, d0, d1, opts) {
+    opts = opts || {};
+    const span = d1 - d0 || 1;
+    const pos = clamp(((value - d0) / span) * 100, 1.5, 98.5);
+    const gradClass = opts.lowGood ? 'grad-lowgood' : 'grad-symmetric';
+    let cuts = '';
+    (opts.cuts || []).forEach(c => {
+      const cp = clamp(((c.x - d0) / span) * 100, 0, 100);
+      cuts += '<span class="range-cut" style="left:' + cp + '%" data-l="' + esc(c.l) + '"></span>';
+    });
+    const scale = opts.noScale ? '' :
+      '<div class="rv-scale"><span class="lo">' + fmt(d0) + '</span><span class="hi">' + fmt(d1) + '</span></div>';
+    return '<div class="rv"><div class="range-bar ' + gradClass + '">' + cuts +
+      '<span class="range-marker" style="left:' + pos + '%"></span></div>' + scale + '</div>';
+  }
+
+  // ---- segmented band bar (bands shape) ------------------------------
+  function bandBar(value, bands, scaleMax, log) {
+    let activeIdx = -1;
+    bands.forEach((b, i) => {
+      const lo = (b.min === undefined ? -Infinity : b.min);
+      const hi = (b.max === undefined ? Infinity : b.max);
+      if (value >= lo && value < hi) activeIdx = i;
+    });
+    if (activeIdx === -1) activeIdx = bands.length - 1;
+    const segCls = { normal:'s-normal', border:'s-border', alert:'s-alert', critical:'s-critical' };
+    const segs = bands.map((b, i) =>
+      '<div class="seg ' + segCls[b.zone] + (i === activeIdx ? ' active' : '') + '">' + esc(b.label) + '</div>'
+    ).join('');
+    const mpos = posOnScale(value, scaleMax, log);
+    const marker = '<span class="seg-marker" style="left:' + mpos + '%"></span>';
+    return {
+      html: '<div class="rv"><div class="seg-bar">' + segs + marker + '</div>' +
+            '<div class="seg-scale"><span>0</span><span>' + fmt(scaleMax) + (log ? ' (log)' : '') + '</span></div></div>',
+      activeBand: bands[activeIdx]
+    };
+  }
+
+  // ---- qualitative 3-zone strip (qualitative shape) ------------------
+  function qualStrip(value, negMax, posMin, twoZone) {
+    let res, rcls, qactive;
+    if (twoZone) {
+      if (value < posMin) { res = 'Negative'; rcls = 'r-neg'; qactive = 'neg'; }
+      else { res = 'Positive'; rcls = 'r-pos'; qactive = 'pos'; }
+    } else {
+      if (value < negMax) { res = 'Negative'; rcls = 'r-neg'; qactive = 'neg'; }
+      else if (value >= posMin) { res = 'Positive'; rcls = 'r-pos'; qactive = 'pos'; }
+      else { res = 'Indeterminate'; rcls = 'r-ind'; qactive = 'ind'; }
+    }
+    let zones;
+    if (twoZone) {
+      zones = '<div class="qz q-neg ' + (qactive === 'neg' ? 'active' : '') + '">Negative</div>' +
+              '<div class="qz q-pos ' + (qactive === 'pos' ? 'active' : '') + '">Positive</div>';
+    } else {
+      zones = '<div class="qz q-neg ' + (qactive === 'neg' ? 'active' : '') + '">Neg &lt;' + negMax + '</div>' +
+              '<div class="qz q-ind ' + (qactive === 'ind' ? 'active' : '') + '">Indet</div>' +
+              '<div class="qz q-pos ' + (qactive === 'pos' ? 'active' : '') + '">Pos ≥' + posMin + '</div>';
+    }
+    const zone = qactive === 'neg' ? 'normal' : (qactive === 'ind' ? 'border' : 'critical');
+    const cutLbl = twoZone ? String(posMin) : (negMax + '/' + posMin);
+    return {
+      html: '<div class="rv"><div class="qual-result ' + rcls + '">' + res + '</div>' +
+            '<div class="qual-index">Index: ' + fmt(value) + ' (cut-off ' + cutLbl + ')</div>' +
+            '<div class="qual-strip">' + zones + '</div></div>',
+      zone: zone, resultWord: res
+    };
+  }
+
+  // ---- percentile mini-table (percentile shape) ----------------------
+  function pctTable(value, grid, activeAge) {
+    const rows = grid.map(g => {
+      if (g.age === activeAge) {
+        const youCell = '<td colspan="3" style="text-align:left">5–95% CI: <strong>' + esc(g.range) +
+          '</strong> · Your value <span class="you">' + fmt(value) + '</span></td>';
+        return '<tr class="active-row"><td>' + esc(g.age) + '</td>' + youCell + '</tr>';
+      }
+      return '<tr><td>' + esc(g.age) + '</td><td>' + fmt(g.p5) + '</td><td>' + fmt(g.p50) + '</td><td>' + fmt(g.p95) + '</td></tr>';
+    }).join('');
+    return '<table class="pct-table"><thead><tr><th>Age (yr)</th><th>5th</th><th>50th</th><th>95th</th></tr></thead>' +
+           '<tbody>' + rows + '</tbody></table>';
+  }
+
+  // ---- gestational reference chips (gestational shape) ---------------
+  function gestRef(weeks, activeWk) {
+    return '<div class="gest-ref">' + weeks.map(w =>
+      '<span class="gest-chip ' + (w.wk === activeWk ? 'active' : '') + '">' + esc(w.wk) + 'w: ' + fmt(w.low) + '–' + fmt(w.high) + '</span>'
+    ).join('') + '</div>';
+  }
+
+  // ---- classify a value against a simple low/high interval -----------
+  function classifyInterval(value, low, high, dir) {
+    if (high != null && value > high) return 'alert';
+    if (dir !== 'low-good' && low != null && value < low) return 'border';
+    return 'normal';
+  }
+
+  // =====================================================================
+  // RENDER ONE RESULT
+  // =====================================================================
+  function renderResult(r) {
+    const c = CATALOG[r.id];
+    if (!c) return null;
+    const ctx = PATIENT.ctx;
+    let zone = 'normal', statusText = 'Normal', valText = '', viz = '', condNote = '', rangeText = '', resultWord = null;
+
+    switch (c.shape) {
+
+      case 'cutoff': {
+        const v = r.value;
+        zone = v > c.cutoff ? 'alert' : 'normal';
+        valText = fmt(v);
+        rangeText = '&lt; ' + fmt(c.cutoff);
+        if (c.altCut) rangeText += '<span class="alt">' + esc(c.altCut) + '</span>';
+        const d1 = Math.max(c.cutoff * 2, v * 1.15);
+        viz = rangeBar(v, 0, d1, { lowGood:true, cuts:[{ x:c.cutoff, l:'cut-off' }] });
+        statusText = zone === 'alert' ? 'High' : 'Normal';
+        break;
+      }
+
+      case 'range': {
+        const v = r.value;
+        zone = classifyInterval(v, c.low, c.high, c.dir);
+        valText = fmt(v);
+        rangeText = fmt(c.low) + ' – ' + fmt(c.high);
+        if (c.alt) rangeText += '<span class="alt">' + esc(c.alt) + '</span>';
+        const pad = (c.high - c.low) * 0.6;
+        const d0 = Math.max(0, c.low - pad), d1 = Math.max(c.high + pad, v * 1.05);
+        viz = rangeBar(v, d0, d1, { cuts:[{ x:c.low, l:fmt(c.low) }, { x:c.high, l:fmt(c.high) }] });
+        statusText = zone === 'alert' ? 'High' : (zone === 'border' ? 'Low' : 'Normal');
+        break;
+      }
+
+      case 'bands': {
+        const v = r.value;
+        const sm = c.scaleMax || (Math.max.apply(null, c.bands.map(b => b.max || 0)) * 1.5);
+        const bb = bandBar(v, c.bands, sm, c.scaleLog);
+        zone = bb.activeBand.zone;
+        viz = bb.html;
+        valText = fmt(v);
+        resultWord = bb.activeBand.label;
+        rangeText = '<span style="font-size:9.5px">' + c.bands.map(b => {
+          const hasLo = b.min != null, hasHi = b.max != null;
+          let span;
+          if (hasLo && hasHi) span = fmt(b.min) + '–' + fmt(b.max);   // bounded band
+          else if (hasLo)     span = '≥ ' + fmt(b.min);               // upper-unbounded
+          else if (hasHi)     span = '&lt; ' + fmt(b.max);            // lower-unbounded
+          else                span = '—';
+          return esc(b.label) + ': ' + span;
+        }).join(' · ') + '</span>';
+        if (c.labRef) rangeText += '<span class="alt">' + esc(c.labRef) + '</span>';
+        if (c.alt)    rangeText += '<span class="alt">' + esc(c.alt) + '</span>';
+        statusText = bb.activeBand.label;
+        break;
+      }
+
+      case 'qualitative': {
+        const v = r.value;
+        const q = qualStrip(v, c.negMax, c.posMin, c.twoZone);
+        zone = q.zone; viz = q.html; resultWord = q.resultWord;
+        valText = q.resultWord;
+        rangeText = c.twoZone
+          ? ('Neg &lt;' + c.posMin + ' · Pos ≥' + c.posMin)
+          : ('&lt;' + c.negMax + ' Neg · ' + c.negMax + '–' + c.posMin + ' Indet · ≥' + c.posMin + ' Pos');
+        statusText = q.resultWord;
+        break;
+      }
+
+      case 'conditional': {
+        const v = r.value;
+        const key = ctx[c.by];
+        const sel = c.cutoffs[key] || Object.values(c.cutoffs)[0];
+        condNote = key || '';
+        if (sel.cutoff != null) {
+          zone = v > sel.cutoff ? 'alert' : 'normal';
+          valText = fmt(v);
+          rangeText = '&lt; ' + fmt(sel.cutoff);
+          const d1 = Math.max(sel.cutoff * 2, v * 1.15);
+          viz = rangeBar(v, 0, d1, { lowGood:true, cuts:[{ x:sel.cutoff, l:'cut-off' }] });
+          statusText = zone === 'alert' ? 'High' : 'Normal';
+        } else {
+          zone = classifyInterval(v, sel.low, sel.high, 'both');
+          valText = fmt(v);
+          rangeText = fmt(sel.low) + ' – ' + fmt(sel.high);
+          const pad = (sel.high - sel.low) * 0.6;
+          const d0 = Math.max(0, sel.low - pad), d1 = Math.max(sel.high + pad, v * 1.05);
+          viz = rangeBar(v, d0, d1, { cuts:[{ x:sel.low, l:fmt(sel.low) }, { x:sel.high, l:fmt(sel.high) }] });
+          statusText = zone === 'alert' ? 'High' : (zone === 'border' ? 'Low' : 'Normal');
+        }
+        const others = Object.keys(c.cutoffs).filter(k => k !== key);
+        if (others.length) {
+          rangeText += '<span class="alt">' + others.slice(0, 2).map(k => {
+            const o = c.cutoffs[k];
+            return o.cutoff != null ? (k + ': &lt;' + fmt(o.cutoff)) : (k + ': ' + fmt(o.low) + '–' + fmt(o.high));
+          }).join(' · ') + (others.length > 2 ? ' · …' : '') + '</span>';
+        }
+        break;
+      }
+
+      case 'gestational': {
+        const v = r.value;
+        const wk = ctx.gestWeek;
+        const sel = c.weeks.find(w => w.wk === wk) || c.weeks[0];
+        zone = classifyInterval(v, sel.low, sel.high, 'both');
+        valText = fmt(v);
+        condNote = 'LMP wk ' + wk;
+        rangeText = 'wk ' + esc(wk) + ': ' + fmt(sel.low) + ' – ' + fmt(sel.high);
+        const pad = (sel.high - sel.low) * 0.4;
+        const d0 = Math.max(0, sel.low - pad), d1 = Math.max(sel.high + pad, v * 1.05);
+        viz = rangeBar(v, d0, d1, { noScale:true, cuts:[{ x:sel.low, l:fmt(sel.low) }, { x:sel.high, l:fmt(sel.high) }] }) +
+              gestRef(c.weeks, wk);
+        statusText = zone === 'alert' ? 'High' : (zone === 'border' ? 'Low' : 'Normal');
+        break;
+      }
+
+      case 'percentile': {
+        const v = r.value;
+        const band = c.grid.find(g => g.age === ctx.amhBand) || c.grid[0];
+        zone = v < band.p5 ? 'border' : 'normal';
+        valText = fmt(v);
+        condNote = 'Age band ' + band.age;
+        rangeText = 'p5–p95: ' + fmt(band.p5) + '–' + fmt(band.p95);
+        viz = pctTable(v, c.grid, ctx.amhBand);
+        statusText = zone === 'border' ? 'Low' : 'Normal';
+        break;
+      }
+
+      case 'panel': {
+        let worst = 'normal';
+        const subRows = c.members.map(m => {
+          const mv = (r.value || {})[m.name];
+          const z = mv > m.cutoff ? 'alert' : 'normal';
+          if (z === 'alert') worst = 'alert';
+          const d1 = Math.max(m.cutoff * 2, (mv || 0) * 1.15);
+          const bar = rangeBar(mv, 0, d1, { lowGood:true, noScale:true, cuts:[{ x:m.cutoff, l:'' }] });
+          const flag = ZONE[z].flag;
+          return '<div class="panel-sub">' +
+            '<div class="ps-name">' + esc(m.name) + '</div>' +
+            '<div class="ps-val t-value flag-' + flag + '">' + fmt(mv) + '</div>' +
+            '<div class="ps-ref">&lt;' + fmt(m.cutoff) + ' ' + esc(m.unit) + '</div>' +
+            '<div class="ps-bar">' + bar + '</div>' +
+            '<div style="text-align:center"><span class="status-badge ' + ZONE[z].badge + '">' + (z === 'normal' ? 'OK' : 'High') + '</span></div>' +
+            '</div>';
+        }).join('');
+        zone = worst;
+        valText = worst === 'alert' ? 'Abnormal' : 'Normal';
+        statusText = worst === 'alert' ? 'Review' : 'Normal';
+        rangeText = 'see sub-markers';
+        viz = '<div class="panel-block">' + subRows + '</div>';
+        break;
+      }
+
+      default:
+        valText = fmt(r.value);
+    }
+
+    const Z = ZONE[zone];
+    const isAbnormal = zone !== 'normal';
+    const valFlag = (c.shape === 'qualitative')
+      ? (zone === 'normal' ? 'OK' : (zone === 'border' ? 'IND' : 'POS'))
+      : Z.flag;
+
+    // ---- table row ----
+    let rowHtml;
+    if (c.shape === 'panel') {
+      rowHtml = '<tr>' +
+        '<td class="t-name">' + esc(c.name) + '<div class="desc">' + esc(c.desc) + '</div></td>' +
+        '<td colspan="4" style="padding:10px 14px">' + viz + '</td>' +
+        '<td class="c"><span class="status-badge ' + Z.badge + '">' + esc(statusText) + '</span></td>' +
+        '</tr>';
+    } else {
+      rowHtml = '<tr>' +
+        '<td class="t-name">' + esc(c.name) + '<div class="desc">' + esc(c.desc) + '</div>' +
+          (condNote ? '<div class="cond">' + esc(condNote) + '</div>' : '') + '</td>' +
+        '<td class="t-value flag-' + valFlag + '">' + valText + '</td>' +
+        '<td class="t-unit">' + esc(c.unit || '—') + '</td>' +
+        '<td class="t-range">' + rangeText + '</td>' +
+        '<td class="t-bar-cell">' + viz + '</td>' +
+        '<td class="c"><span class="status-badge ' + Z.badge + '">' + esc(statusText) + '</span></td>' +
+        '</tr>';
+    }
+
+    // ---- abnormal card ----
+    let abnHtml = '';
+    if (isAbnormal) {
+      let arrow = (zone === 'alert' || zone === 'critical') ? '↑' : '↑';
+      const lowSide = (c.shape === 'range' || c.shape === 'conditional' || c.shape === 'gestational') && zone === 'border';
+      if (lowSide) arrow = '↓';
+      if (c.lowBad) arrow = '↓';
+      if (c.id === 'AMH') arrow = '↓';
+      const zc = zone === 'critical' ? 'zc-critical' : (zone === 'alert' ? 'zc-alert' : '');
+      const arrowColor = zone === 'critical' ? 'var(--zone-critical-text)' : (zone === 'alert' ? 'var(--zone-alert-text)' : 'var(--zone-borderline-text)');
+      const valBig = (c.shape === 'qualitative') ? resultWord
+                   : (c.shape === 'bands') ? fmt(r.value)
+                   : (c.shape === 'panel') ? '—'
+                   : valText;
+      abnHtml = '<div class="abn-card ' + zc + '">' +
+        '<div class="abn-head"><div class="abn-title">' + esc(c.name) + '<span class="sub">' + esc(c.desc) + '</span></div>' +
+        '<span class="abn-profile-tag">' + esc(PROFILES[c.profile].name) + '</span></div>' +
+        '<div class="abn-value"><span class="arrow" style="color:' + arrowColor + '">' + arrow + '</span>' +
+        '<span class="v" style="color:' + arrowColor + '">' + esc(valBig) + '</span>' +
+        '<span class="u">' + esc(c.unit || '') + '</span>' +
+        '<span style="margin-left:auto"><span class="status-badge ' + Z.badge + '">' + esc(statusText) + '</span></span></div>' +
+        viz +
+        '<div class="abn-note">' + abnNote(c, zone, resultWord) + '</div>' +
+        '</div>';
+    }
+
+    return { rowHtml: rowHtml, zone: zone, status: statusText, isAbnormal: isAbnormal, abnHtml: abnHtml, name: c.name, profile: c.profile };
+  }
+
+  // short clinical note for abnormal cards (pre-authored, trusted strings)
+  function abnNote(c, zone, resultWord) {
+    const notes = {
+      CKMB:    '<strong>CK-MB elevated.</strong> Cardiac muscle injury marker above cut-off — correlate with troponin, ECG and clinical picture; serial testing advised.',
+      HSCRP:   '<strong>High cardiovascular risk.</strong> hs-CRP &gt;3.0 mg/L indicates vascular inflammation; combine with lipid profile and lifestyle modification.',
+      HBA1C:   '<strong>Above target.</strong> HbA1c in the diabetic range reflects sustained hyperglycemia over ~3 months; clinical correlation and glycemic management indicated.',
+      TSH:     '<strong>Mildly elevated TSH.</strong> Suggests subclinical hypothyroidism; correlate with free T4 and symptoms, repeat in 6–8 weeks.',
+      CRP:     '<strong>Acute inflammation.</strong> CRP above cut-off indicates an active inflammatory / infective process — correlate clinically.',
+      DENG_NS1:'<strong>Dengue NS1 positive.</strong> Supports acute dengue infection (typically days 1–7). Monitor platelets, hydration and warning signs.',
+      VITD:    '<strong>Vitamin-D deficiency.</strong> Levels &lt;10 ng/mL — supplementation (cholecalciferol) and sunlight exposure recommended; recheck in 8–12 weeks.',
+    };
+    if (notes[c.id]) return notes[c.id];
+    if (zone === 'critical') return '<strong>Critical result.</strong> ' + esc(resultWord || 'Value outside critical threshold') + ' — prompt clinical attention recommended.';
+    if (zone === 'alert') return '<strong>Above reference.</strong> Result exceeds the upper reference limit; clinical correlation advised.';
+    return '<strong>Outside reference.</strong> ' + esc(resultWord || 'Borderline result') + ' — review with your physician.';
+  }
+
+  // =====================================================================
+  // BUILD
+  // =====================================================================
+  function build() {
+    $('#m-reportid').textContent = PATIENT.reportId;
+    $('#m-generated').textContent = PATIENT.generated;
+    $('#m-paneldesc').textContent = PATIENT.panelDesc;
+
+    const pcells = [
+      ['Patient Name', esc(PATIENT.name), true],
+      ['Patient ID', esc(PATIENT.id), false],
+      ['Age / Sex', esc(PATIENT.age + ' Yrs / ' + PATIENT.sex), false],
+      ['Referring Doctor', esc(PATIENT.doctor), false],
+      ['Sample Collected', esc(PATIENT.collected), false],
+      ['Sample Type', esc(PATIENT.sampleType), false],
+      ['Lab Location', esc(PATIENT.lab), false],
+      ['Barcode', esc(PATIENT.barcode), false],
+      ['Report Generated', esc(PATIENT.generated) + ' · <span class="verified-inline"><svg style="width:13px;height:13px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Final &amp; Verified</span>', false],
+    ];
+    $('#patient-grid').innerHTML = pcells.map(p =>
+      '<div class="patient-cell"><div class="lbl">' + esc(p[0]) + '</div><div class="val' + (p[2] ? ' accent' : '') + '">' + p[1] + '</div></div>'
+    ).join('');
+
+    const rendered = RESULTS.map(renderResult).filter(Boolean);
+
+    const counts = { normal:0, border:0, alert:0, critical:0 };
+    rendered.forEach(r => counts[r.zone]++);
+    $('#glance-counts').innerHTML =
+      '<div class="count-card c-normal anim d1"><div class="num">' + counts.normal + '</div><div class="lbl">Normal</div></div>' +
+      '<div class="count-card c-border anim d2"><div class="num">' + counts.border + '</div><div class="lbl">Borderline</div></div>' +
+      '<div class="count-card c-alert anim d3"><div class="num">' + counts.alert + '</div><div class="lbl">Alert</div></div>' +
+      '<div class="count-card c-critical anim d4"><div class="num">' + counts.critical + '</div><div class="lbl">Critical</div></div>';
+
+    const abn = rendered.filter(r => r.isAbnormal);
+    const total = rendered.length;
+    const bannerIcon = '<svg class="ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+    const critNames = rendered.filter(r => r.zone === 'critical').map(r => r.name);
+    let bannerMsg;
+    if (abn.length === 0) {
+      bannerMsg = '<strong>All ' + total + ' parameters within reference range.</strong> No action required — maintain routine follow-up.';
+    } else {
+      bannerMsg = '<span><strong>' + abn.length + ' of ' + total + ' parameters need attention.</strong> ' +
+        (critNames.length ? 'Critical: <strong>' + critNames.map(esc).join(', ') + '</strong> — prompt clinical review advised. ' : '') +
+        'Review the highlighted findings below with your physician.</span>';
+    }
+    $('#glance-banner').innerHTML = bannerIcon + bannerMsg;
+
+    const order = { critical:0, alert:1, border:2 };
+    abn.sort((a, b) => order[a.zone] - order[b.zone]);
+    $('#abn-grid').innerHTML = abn.length
+      ? abn.map(r => r.abnHtml).join('')
+      : '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted)">No abnormal findings.</div>';
+
+    const byProfile = {};
+    rendered.forEach(r => { (byProfile[r.profile] = byProfile[r.profile] || []).push(r); });
+    const profOrder = ['CARDIAC','DIABETES','HORMONE','FERTILITY','INFECTION','CANCER','RA','OTHER'];
+    let html = '';
+    profOrder.forEach(pk => {
+      const rows = byProfile[pk];
+      if (!rows || !rows.length) return;
+      const p = PROFILES[pk];
+      const pc = { normal:0, border:0, alert:0, critical:0 };
+      rows.forEach(r => pc[r.zone]++);
+      const pills = [];
+      if (pc.critical) pills.push('<span class="summary-pill pill-critical">' + pc.critical + ' Critical</span>');
+      if (pc.alert) pills.push('<span class="summary-pill pill-alert">' + pc.alert + ' Alert</span>');
+      if (pc.border) pills.push('<span class="summary-pill pill-warn">' + pc.border + ' Borderline</span>');
+      if (pc.normal) pills.push('<span class="summary-pill pill-normal">' + pc.normal + ' Normal</span>');
+      html += '<div class="profile-section">' +
+        '<div class="profile-bar"><span class="p-name">' + esc(p.name) + '</span>' +
+        '<span class="p-desc">' + esc(p.desc) + '</span>' +
+        '<span class="profile-summary">' + pills.join('') + '</span></div>' +
+        '<table class="test-table"><thead><tr>' +
+        '<th>Parameter</th><th class="c">Result</th><th class="c">Unit</th>' +
+        '<th class="c">Reference Range</th><th class="c">Range Indicator</th><th class="c">Status</th>' +
+        '</tr></thead><tbody>' + rows.map(r => r.rowHtml).join('') + '</tbody></table></div>';
+    });
+    $('#profiles').innerHTML = html;
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>

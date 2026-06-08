@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZiffyHealth — Patient</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="app.css">
+<style>
+  /* patient-app local helpers (no new colors — vars/classes from app.css only) */
+  .tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .tile { display:flex; flex-direction:column; gap:8px; align-items:flex-start; padding:13px; border:1px solid var(--border);
+          border-radius:var(--radius-sm); background:var(--surface-muted); cursor:pointer; transition:.12s; text-align:left; }
+  .tile:hover { border-color:var(--primary); background:var(--surface); }
+  .tile .ti { width:34px; height:34px; border-radius:9px; background:var(--primary-subtle); color:var(--primary-subtle-text);
+              display:grid; place-items:center; }
+  .tile .ti svg { width:18px; height:18px; }
+  .tile .tl { font-size:13px; font-weight:600; color:var(--text-strong); }
+  .greet-name { font-size:24px; }
+  .spark { vertical-align:middle; }
+  .kind-ico { width:38px; height:38px; border-radius:50%; display:grid; place-items:center; flex:0 0 auto; }
+  .kind-ico svg { width:18px; height:18px; }
+  .ki-visit { background:var(--primary-subtle); color:var(--primary-subtle-text); }
+  .ki-lab   { background:#E0FFE9; color:var(--emerald-700); }
+  .ki-rx    { background:var(--zone-normal-bg); color:var(--zone-normal-text); }
+  .ki-pay   { background:var(--surface-sunken); color:var(--text); }
+  .ki-alert { background:var(--zone-alert-bg); color:var(--zone-alert-text); }
+  .month-h { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); font-weight:700;
+             margin:18px 0 4px; }
+  .day-chips .chip { flex-direction:column; gap:2px; min-width:52px; padding:7px 6px; }
+  .day-chips .chip .dn { font-size:10px; text-transform:uppercase; letter-spacing:.04em; opacity:.8; }
+  .day-chips .chip .dd { font-size:15px; font-weight:700; }
+  .time-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .time-grid .chip { justify-content:center; }
+  .stars { color:var(--amber-500); font-weight:600; font-size:12.5px; }
+  /* video consult stage */
+  .vstage { position:relative; min-height:420px; display:grid; place-items:center; padding:18px; }
+  .vstage .who-card { text-align:center; }
+  .vstage .who-card .av { width:88px; height:88px; border-radius:50%; background:rgba(255,255,255,.10);
+        border:1px solid rgba(255,255,255,.18); display:grid; place-items:center; font-family:var(--font-display);
+        font-weight:800; font-size:30px; color:#fff; margin:0 auto 12px; }
+  .vstage .who-card .nm { font-family:var(--font-display); font-weight:700; font-size:18px; color:#fff; }
+  .vstage .who-card .sp { font-size:13px; color:#8fb588; margin-top:2px; }
+  .vstage .pip { position:absolute; right:18px; bottom:78px; width:120px; height:84px; border-radius:12px;
+        background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18); display:grid; place-items:center;
+        color:#bcd9b3; font-weight:700; font-size:13px; }
+  .vstage .controls { position:absolute; left:0; right:0; bottom:16px; display:flex; gap:12px; justify-content:center; }
+  .vbtn { width:46px; height:46px; border-radius:50%; border:1px solid rgba(255,255,255,.18);
+        background:rgba(255,255,255,.10); color:#eaf6e6; display:grid; place-items:center; cursor:pointer; }
+  .vbtn:hover { background:rgba(255,255,255,.18); }
+  .vbtn svg { width:20px; height:20px; }
+  .vbtn.leave { background:var(--red-600); border-color:transparent; color:#fff; width:auto; padding:0 18px; border-radius:999px; gap:8px; font-weight:600; font-family:var(--font-body); }
+  .unread-dot { width:9px; height:9px; border-radius:50%; background:var(--primary); flex:0 0 auto; }
+  .trend-cell { display:flex; align-items:center; gap:8px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"><img src="assets/brand-1-d898a4cf.jpg" alt=""></div>
+      <div>
+        <div class="name">Ziffy<b>Health</b></div>
+        <div class="sub">Patient</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" data-screen="home" data-title="Home">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-item" data-screen="appointments" data-title="Appointments">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Appointments</span>
+      </div>
+      <div class="nav-item" data-screen="book" data-title="Book Appointment">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+        <span>Book</span>
+      </div>
+      <div class="nav-item" data-screen="prescriptions" data-title="Prescriptions">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h7a4 4 0 0 1 0 8H5z"/><path d="M5 12v8"/><path d="m13 14 6 6M19 14l-6 6"/></svg>
+        <span>Prescriptions</span>
+      </div>
+      <div class="nav-item" data-screen="reports" data-title="Lab Reports">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/></svg>
+        <span>Reports</span>
+      </div>
+
+      <div class="nav-label">Account</div>
+      <div class="nav-item" data-screen="wallet" data-title="Wallet & Billing">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h.01"/><path d="M3 10h18"/></svg>
+        <span>Wallet</span>
+      </div>
+      <div class="nav-item" data-screen="timeline" data-title="Health Timeline">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><circle cx="12" cy="7" r="2"/><circle cx="12" cy="15" r="2"/><path d="M12 7h7M12 15H5"/></svg>
+        <span>Timeline</span>
+      </div>
+      <div class="nav-item" data-screen="profile" data-title="Profile">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        <span>Profile</span>
+      </div>
+      <div class="nav-item" data-screen="consult" data-title="Video Consultation">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+        <span>Consult</span>
+      </div>
+      <div class="nav-item" data-screen="notifications" data-title="Notifications">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span>Notifications</span>
+        <span class="badge-dot">2</span>
+      </div>
+    </nav>
+
+    <div class="docchip">
+      <div class="av">AI</div>
+      <div>
+        <div class="who">Ananya R. Iyer</div>
+        <div class="role">Patient · ZH-2026-0612</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <div class="page-title" id="pageTitle">Home</div>
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search reports, doctors…">
+      </div>
+      <div class="spacer"></div>
+      <div class="icon-btn" title="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span class="dot"></span>
+      </div>
+      <div class="avatar">AI</div>
+    </header>
+
+    <div class="content">
+
+      <!-- ============ 1. HOME ============ -->
+      <section class="screen active" id="home">
+        <div class="dark-panel" style="padding:22px 24px; margin-bottom:18px;">
+          <div class="greet-name" style="font-family:var(--font-display); font-weight:800; color:#fff;">Hello, Ananya 👋</div>
+          <div style="color:#bcd9b3; margin-top:4px;">You have a telemedicine appointment with Dr. Anita Deshmukh on Jul 5. Your latest HbA1c needs a follow-up.</div>
+        </div>
+
+        <div class="row cols-4">
+          <div class="stat accent">
+            <div class="label"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Next appointment</div>
+            <div class="num">Jul 5</div>
+            <div class="delta">Telemed · 10:30 AM</div>
+          </div>
+          <div class="stat">
+            <div class="label"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Outstanding balance</div>
+            <div class="num">₹1,250</div>
+            <div class="delta down">1 invoice due</div>
+          </div>
+          <div class="stat">
+            <div class="label"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>Last lab result</div>
+            <div class="num">6.9%</div>
+            <div class="delta down">HbA1c · borderline</div>
+          </div>
+          <div class="stat">
+            <div class="label"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h7a4 4 0 0 1 0 8H5z"/><path d="M5 12v8"/></svg>Active prescriptions</div>
+            <div class="num">5</div>
+            <div class="delta up">2 refills soon</div>
+          </div>
+        </div>
+
+        <div class="row cols-12" style="margin-top:16px;">
+          <div class="card">
+            <div class="card-head"><h3>Next appointment</h3><span class="spacer"></span><span class="badge primary"><span class="dot"></span>Telemed</span></div>
+            <div class="card-body">
+              <div class="list-row" style="border-bottom:0; padding-top:0;">
+                <div class="av">AD</div>
+                <div>
+                  <div class="strong">Dr. Anita Deshmukh</div>
+                  <div class="muted small">Diabetology · ZiffyHealth Clinic</div>
+                </div>
+                <div class="spacer"></div>
+                <div style="text-align:right;">
+                  <div class="strong">Sat, 5 Jul 2026</div>
+                  <div class="muted small">10:30 AM IST</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px; margin-top:14px;">
+                <button class="btn btn-primary">
+                  <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+                  Join video
+                </button>
+                <button class="btn btn-outline">Reschedule</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Quick links</h3></div>
+            <div class="card-body">
+              <div class="tiles">
+                <button class="tile" data-jump="book"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span><span class="tl">Book</span></button>
+                <button class="tile" data-jump="reports"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span class="tl">Reports</span></button>
+                <button class="tile" data-jump="prescriptions"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h7a4 4 0 0 1 0 8H5z"/><path d="M5 12v8"/></svg></span><span class="tl">Prescriptions</span></button>
+                <button class="tile" data-jump="wallet"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg></span><span class="tl">Wallet</span></button>
+                <button class="tile" data-jump="timeline"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><circle cx="12" cy="7" r="2"/><circle cx="12" cy="15" r="2"/></svg></span><span class="tl">Timeline</span></button>
+                <button class="tile" data-jump="profile"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span><span class="tl">Profile</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-head"><h3>Recent activity</h3></div>
+          <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+            <div class="list-row">
+              <div class="kind-ico ki-lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/></svg></div>
+              <div><div class="strong">Lab report ready — Comprehensive panel</div><div class="muted small">33 results · 2 flagged for review</div></div>
+              <div class="spacer"></div><div class="muted small">2 days ago</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-rx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h7a4 4 0 0 1 0 8H5z"/></svg></div>
+              <div><div class="strong">New prescription from Dr. Deshmukh</div><div class="muted small">5 medications · valid 30 days</div></div>
+              <div class="spacer"></div><div class="muted small">2 days ago</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/></svg></div>
+              <div><div class="strong">Payment received — ₹800</div><div class="muted small">Invoice INV-2026-0418 · Consultation</div></div>
+              <div class="spacer"></div><div class="muted small">12 May 2026</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 2. APPOINTMENTS ============ -->
+      <section class="screen" id="appointments">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:6px;">
+          <div>
+            <h1 class="page-h">Appointments</h1>
+            <div class="page-sub">Manage your upcoming and past visits.</div>
+          </div>
+          <button class="btn btn-primary" data-jump="book"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Book new</button>
+        </div>
+
+        <div class="card pad" style="margin-bottom:18px;">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <div class="av list-row" style="width:48px; height:48px; border-radius:50%; background:var(--surface-sunken); color:var(--primary); display:grid; place-items:center; font-weight:700; border:0; padding:0;">AD</div>
+            <div>
+              <div class="strong" style="font-size:15px;">Dr. Anita Deshmukh</div>
+              <div class="muted small">Diabetology · Sat, 5 Jul 2026 · 10:30 AM</div>
+            </div>
+            <span class="badge primary"><span class="dot"></span>Telemed</span>
+            <div class="spacer" style="flex:1;"></div>
+            <button class="btn btn-primary"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>Join video</button>
+            <button class="btn btn-outline">Directions</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Upcoming</h3></div>
+          <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+            <div class="list-row">
+              <div class="av">AD</div>
+              <div><div class="strong">Dr. Anita Deshmukh</div><div class="muted small">Diabetology</div></div>
+              <div class="spacer"></div>
+              <div class="muted small" style="width:130px;">Sat, 5 Jul · 10:30 AM</div>
+              <span class="badge primary">Telemed</span>
+              <span class="badge normal" style="margin:0 12px;">Confirmed</span>
+              <button class="btn btn-ghost sm">Cancel</button>
+            </div>
+            <div class="list-row">
+              <div class="av">RM</div>
+              <div><div class="strong">Dr. Rohan Mehta</div><div class="muted small">Cardiology</div></div>
+              <div class="spacer"></div>
+              <div class="muted small" style="width:130px;">Wed, 16 Jul · 4:00 PM</div>
+              <span class="badge neutral">In-clinic</span>
+              <span class="badge borderline" style="margin:0 12px;">Pending</span>
+              <button class="btn btn-ghost sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-head"><h3>Past</h3></div>
+          <div class="card-body" style="padding-top:4px; padding-bottom:4px; opacity:.78;">
+            <div class="list-row">
+              <div class="av">AD</div>
+              <div><div class="strong">Dr. Anita Deshmukh</div><div class="muted small">Diabetology</div></div>
+              <div class="spacer"></div>
+              <div class="muted small" style="width:130px;">12 May 2026</div>
+              <span class="badge neutral">In-clinic</span>
+              <span class="badge normal" style="margin:0 12px;">Completed</span>
+              <button class="btn btn-outline sm">View summary</button>
+            </div>
+            <div class="list-row">
+              <div class="av">SK</div>
+              <div><div class="strong">Dr. Sunita Kapoor</div><div class="muted small">General Medicine</div></div>
+              <div class="spacer"></div>
+              <div class="muted small" style="width:130px;">28 Mar 2026</div>
+              <span class="badge primary">Telemed</span>
+              <span class="badge normal" style="margin:0 12px;">Completed</span>
+              <button class="btn btn-outline sm">View summary</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3. BOOK ============ -->
+      <section class="screen" id="book">
+        <h1 class="page-h">Book an appointment</h1>
+        <div class="page-sub">Choose a specialty, pick a doctor, and confirm a slot.</div>
+
+        <div class="chips" style="margin-bottom:18px;">
+          <span class="chip active">General</span>
+          <span class="chip">Cardiology</span>
+          <span class="chip">Diabetology</span>
+          <span class="chip">Dermatology</span>
+        </div>
+
+        <div class="row cols-12">
+          <div class="card">
+            <div class="card-head"><h3>Doctors</h3></div>
+            <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+              <div class="list-row">
+                <div class="av">SK</div>
+                <div>
+                  <div class="strong">Dr. Sunita Kapoor</div>
+                  <div class="muted small">General Medicine · <span class="stars">★ 4.9</span> · Next: Today 4:30 PM</div>
+                </div>
+                <div class="spacer"></div>
+                <button class="btn btn-primary sm">Select</button>
+              </div>
+              <div class="list-row">
+                <div class="av">VN</div>
+                <div>
+                  <div class="strong">Dr. Vikram Nair</div>
+                  <div class="muted small">General Medicine · <span class="stars">★ 4.8</span> · Next: Tomorrow 11:00 AM</div>
+                </div>
+                <div class="spacer"></div>
+                <button class="btn btn-outline sm">Select</button>
+              </div>
+              <div class="list-row">
+                <div class="av">PG</div>
+                <div>
+                  <div class="strong">Dr. Priya Gupta</div>
+                  <div class="muted small">General Medicine · <span class="stars">★ 4.7</span> · Next: Wed 9:30 AM</div>
+                </div>
+                <div class="spacer"></div>
+                <button class="btn btn-outline sm">Select</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Pick a slot</h3><span class="spacer"></span><span class="muted small">Dr. Sunita Kapoor</span></div>
+            <div class="card-body">
+              <div class="chips day-chips" style="margin-bottom:14px;">
+                <span class="chip active"><span class="dn">Mon</span><span class="dd">7</span></span>
+                <span class="chip"><span class="dn">Tue</span><span class="dd">8</span></span>
+                <span class="chip"><span class="dn">Wed</span><span class="dd">9</span></span>
+                <span class="chip"><span class="dn">Thu</span><span class="dd">10</span></span>
+              </div>
+              <div class="label" style="margin-bottom:8px;">Available times</div>
+              <div class="time-grid" style="margin-bottom:16px;">
+                <span class="chip">9:00 AM</span>
+                <span class="chip active">10:30 AM</span>
+                <span class="chip">12:00 PM</span>
+                <span class="chip">2:30 PM</span>
+                <span class="chip">4:30 PM</span>
+                <span class="chip">6:00 PM</span>
+              </div>
+              <div class="field">
+                <label class="label">Chief complaint</label>
+                <textarea class="input" rows="3" placeholder="Briefly describe your symptoms…">Recurring headaches and fatigue over the past two weeks.</textarea>
+              </div>
+              <button class="btn btn-primary block">Confirm booking</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 4. PRESCRIPTIONS ============ -->
+      <section class="screen" id="prescriptions">
+        <h1 class="page-h">Prescriptions</h1>
+        <div class="page-sub">Your medications, dosages, and downloadable prescriptions.</div>
+
+        <div class="chips" style="margin-bottom:18px;">
+          <span class="chip active">Active</span>
+          <span class="chip">Expired</span>
+          <span class="chip">Revoked</span>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-head">
+            <h3>Dr. Anita Deshmukh</h3>
+            <span class="muted small">· 07 Jun 2026</span>
+            <span class="badge primary">ZiffyHealth Clinic</span>
+            <span class="spacer"></span>
+            <span class="badge normal"><span class="dot"></span>Active</span>
+          </div>
+          <div class="card-body" style="padding-top:4px; padding-bottom:8px;">
+            <div class="list-row">
+              <div><div class="strong">Metformin</div><div class="muted small">500 mg · Tablet</div></div>
+              <div class="spacer"></div>
+              <div class="mono" style="width:90px;">1 - 0 - 1</div>
+              <div class="muted small" style="width:90px; text-align:right;">30 days</div>
+            </div>
+            <div class="list-row">
+              <div><div class="strong">Vitamin D3</div><div class="muted small">60,000 IU · Sachet</div></div>
+              <div class="spacer"></div>
+              <div class="mono" style="width:90px;">Weekly</div>
+              <div class="muted small" style="width:90px; text-align:right;">8 weeks</div>
+            </div>
+            <div class="list-row">
+              <div><div class="strong">Atorvastatin</div><div class="muted small">10 mg · Tablet</div></div>
+              <div class="spacer"></div>
+              <div class="mono" style="width:90px;">0 - 0 - 1</div>
+              <div class="muted small" style="width:90px; text-align:right;">30 days</div>
+            </div>
+          </div>
+          <div class="card-head" style="border-top:1px solid var(--divider); border-bottom:0; justify-content:flex-end;">
+            <button class="btn btn-outline sm"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Download PDF</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Dr. Sunita Kapoor</h3>
+            <span class="muted small">· 28 Mar 2026</span>
+            <span class="badge primary">ZiffyHealth Clinic</span>
+            <span class="spacer"></span>
+            <span class="badge normal"><span class="dot"></span>Active</span>
+          </div>
+          <div class="card-body" style="padding-top:4px; padding-bottom:8px;">
+            <div class="list-row">
+              <div><div class="strong">Cetirizine</div><div class="muted small">10 mg · Tablet</div></div>
+              <div class="spacer"></div>
+              <div class="mono" style="width:90px;">0 - 0 - 1</div>
+              <div class="muted small" style="width:90px; text-align:right;">15 days</div>
+            </div>
+            <div class="list-row">
+              <div><div class="strong">Pantoprazole</div><div class="muted small">40 mg · Tablet</div></div>
+              <div class="spacer"></div>
+              <div class="mono" style="width:90px;">1 - 0 - 0</div>
+              <div class="muted small" style="width:90px; text-align:right;">15 days</div>
+            </div>
+          </div>
+          <div class="card-head" style="border-top:1px solid var(--divider); border-bottom:0; justify-content:flex-end;">
+            <button class="btn btn-outline sm"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Download PDF</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 5. REPORTS ============ -->
+      <section class="screen" id="reports">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:6px;">
+          <div>
+            <h1 class="page-h">Lab reports</h1>
+            <div class="page-sub">All your diagnostic results in one place.</div>
+          </div>
+          <div class="search" style="max-width:260px; margin:0;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Search tests…">
+          </div>
+        </div>
+
+        <div class="card pad" style="margin-bottom:16px;">
+          <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+            <div class="kind-ico ki-lab" style="width:48px; height:48px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg></div>
+            <div>
+              <div class="strong" style="font-size:15px;">Comprehensive Health Panel</div>
+              <div class="muted small">Collected 06 Jun 2026 · ZiffyHealth Diagnostics</div>
+            </div>
+            <div class="spacer" style="flex:1;"></div>
+            <div class="chips">
+              <span class="badge normal">25 normal</span>
+              <span class="badge alert">6 alert</span>
+              <span class="badge critical">2 critical</span>
+            </div>
+            <a class="btn btn-primary sm" href="../design/static-report.html" target="_blank">View comprehensive</a>
+            <a class="btn btn-outline sm" href="../design/report-final.html" target="_blank">Interactive view</a>
+            <a class="btn btn-ghost sm" href="../design/static-report.html" target="_blank"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Download PDF</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-head"><h3>Individual test reports</h3></div>
+          <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+            <div class="list-row">
+              <div class="kind-ico ki-lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/></svg></div>
+              <div><div class="strong">Cardiac Panel · iChroma II</div><div class="muted small">6 markers · 22 May 2026</div></div>
+              <div class="spacer"></div>
+              <span class="badge critical">2 critical</span>
+              <a class="btn btn-outline sm" href="../design/individual-report.html" target="_blank" style="margin-left:12px;">View</a>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/></svg></div>
+              <div><div class="strong">Arterial Blood Gas · Edan i15</div><div class="muted small">ABG · 05 Jun 2026</div></div>
+              <div class="spacer"></div>
+              <span class="badge alert">2 alert</span>
+              <a class="btn btn-outline sm" href="../design/individual-report.html" target="_blank" style="margin-left:12px;">View</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>All results</h3></div>
+          <table class="table">
+            <thead><tr><th>Test</th><th>Date</th><th>Value</th><th>Trend</th><th style="text-align:right;">PDF</th></tr></thead>
+            <tbody>
+              <tr class="clickable">
+                <td class="name">HbA1c</td><td>06 Jun 2026</td>
+                <td><span class="mono">6.9 %</span> <span class="badge borderline">High</span></td>
+                <td><div class="trend-cell"><svg class="spark" width="64" height="20" viewBox="0 0 64 20"><polyline points="0,14 16,12 32,11 48,8 64,6" fill="none" stroke="var(--zone-borderline)" stroke-width="2"/></svg></div></td>
+                <td style="text-align:right;"><button class="btn btn-ghost sm">↓</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="name">Vitamin D (25-OH)</td><td>06 Jun 2026</td>
+                <td><span class="mono">11 ng/mL</span> <span class="badge critical">Critical</span></td>
+                <td><div class="trend-cell"><svg class="spark" width="64" height="20" viewBox="0 0 64 20"><polyline points="0,6 16,9 32,11 48,14 64,16" fill="none" stroke="var(--zone-critical)" stroke-width="2"/></svg></div></td>
+                <td style="text-align:right;"><button class="btn btn-ghost sm">↓</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="name">Fasting Glucose</td><td>06 Jun 2026</td>
+                <td><span class="mono">118 mg/dL</span> <span class="badge alert">High</span></td>
+                <td><div class="trend-cell"><svg class="spark" width="64" height="20" viewBox="0 0 64 20"><polyline points="0,12 16,10 32,11 48,9 64,7" fill="none" stroke="var(--zone-alert)" stroke-width="2"/></svg></div></td>
+                <td style="text-align:right;"><button class="btn btn-ghost sm">↓</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="name">Total Cholesterol</td><td>06 Jun 2026</td>
+                <td><span class="mono">182 mg/dL</span> <span class="badge normal">Normal</span></td>
+                <td><div class="trend-cell"><svg class="spark" width="64" height="20" viewBox="0 0 64 20"><polyline points="0,8 16,10 32,9 48,11 64,12" fill="none" stroke="var(--zone-normal)" stroke-width="2"/></svg></div></td>
+                <td style="text-align:right;"><button class="btn btn-ghost sm">↓</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="name">Hemoglobin</td><td>06 Jun 2026</td>
+                <td><span class="mono">12.8 g/dL</span> <span class="badge normal">Normal</span></td>
+                <td><div class="trend-cell"><svg class="spark" width="64" height="20" viewBox="0 0 64 20"><polyline points="0,11 16,10 32,9 48,9 64,8" fill="none" stroke="var(--zone-normal)" stroke-width="2"/></svg></div></td>
+                <td style="text-align:right;"><button class="btn btn-ghost sm">↓</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="name">TSH</td><td>06 Jun 2026</td>
+                <td><span class="mono">4.8 mIU/L</span> <span class="badge borderline">High</span></td>
+                <td><div class="trend-cell"><svg class="spark" width="64" height="20" viewBox="0 0 64 20"><polyline points="0,12 16,11 32,10 48,9 64,7" fill="none" stroke="var(--zone-borderline)" stroke-width="2"/></svg></div></td>
+                <td style="text-align:right;"><button class="btn btn-ghost sm">↓</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="name">Creatinine</td><td>06 Jun 2026</td>
+                <td><span class="mono">0.8 mg/dL</span> <span class="badge normal">Normal</span></td>
+                <td><div class="trend-cell"><svg class="spark" width="64" height="20" viewBox="0 0 64 20"><polyline points="0,10 16,10 32,10 48,9 64,10" fill="none" stroke="var(--zone-normal)" stroke-width="2"/></svg></div></td>
+                <td style="text-align:right;"><button class="btn btn-ghost sm">↓</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 6. WALLET ============ -->
+      <section class="screen" id="wallet">
+        <h1 class="page-h">Wallet &amp; billing</h1>
+        <div class="page-sub">Pay invoices and view your payment history.</div>
+
+        <div class="card pad" style="margin-bottom:18px;">
+          <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+            <div>
+              <div class="label" style="font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted);">Outstanding balance</div>
+              <div style="font-family:var(--font-display); font-size:34px; font-weight:800; color:var(--text-strong); line-height:1.1;">₹1,250 <span style="font-size:14px; font-weight:600; color:var(--zone-alert-text);">due</span></div>
+              <div class="muted small">1 unpaid invoice · INV-2026-0507</div>
+            </div>
+            <div class="spacer" style="flex:1;"></div>
+            <button class="btn btn-primary"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Pay now</button>
+          </div>
+        </div>
+
+        <div class="chips" style="margin-bottom:18px;">
+          <span class="chip active">Outstanding</span>
+          <span class="chip">Paid</span>
+          <span class="chip">All</span>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Invoices</h3></div>
+          <table class="table">
+            <thead><tr><th>Invoice</th><th>Date</th><th>Description</th><th>Amount</th><th>Status</th><th style="text-align:right;">Action</th></tr></thead>
+            <tbody>
+              <tr class="clickable">
+                <td class="mono">INV-2026-0507</td><td>07 Jun 2026</td><td>Comprehensive Health Panel</td><td class="mono">₹1,250</td>
+                <td><span class="badge alert">Due</span></td><td style="text-align:right;"><button class="btn btn-primary sm">Pay</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="mono">INV-2026-0418</td><td>12 May 2026</td><td>Consultation — Diabetology</td><td class="mono">₹800</td>
+                <td><span class="badge normal">Paid</span></td><td style="text-align:right;"><button class="btn btn-ghost sm">Receipt</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="mono">INV-2026-0331</td><td>28 Mar 2026</td><td>Teleconsultation — General</td><td class="mono">₹500</td>
+                <td><span class="badge normal">Paid</span></td><td style="text-align:right;"><button class="btn btn-ghost sm">Receipt</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="mono">INV-2026-0312</td><td>14 Mar 2026</td><td>Lipid Profile</td><td class="mono">₹650</td>
+                <td><span class="badge normal">Paid</span></td><td style="text-align:right;"><button class="btn btn-ghost sm">Receipt</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="mono">INV-2026-0220</td><td>20 Feb 2026</td><td>Consultation — Cardiology</td><td class="mono">₹900</td>
+                <td><span class="badge normal">Paid</span></td><td style="text-align:right;"><button class="btn btn-ghost sm">Receipt</button></td>
+              </tr>
+              <tr class="clickable">
+                <td class="mono">INV-2026-0118</td><td>18 Jan 2026</td><td>Vitamin D + Thyroid panel</td><td class="mono">₹1,100</td>
+                <td><span class="badge normal">Paid</span></td><td style="text-align:right;"><button class="btn btn-ghost sm">Receipt</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 7. TIMELINE ============ -->
+      <section class="screen" id="timeline">
+        <h1 class="page-h">Health timeline</h1>
+        <div class="page-sub">A chronological record of your care.</div>
+
+        <div class="month-h">June 2026</div>
+        <div class="card">
+          <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+            <div class="list-row">
+              <div class="kind-ico ki-lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/></svg></div>
+              <div><div class="strong">Comprehensive Health Panel</div><div class="muted small">33 results · 2 critical flags identified</div></div>
+              <div class="spacer"></div><div class="muted small">06 Jun</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-rx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h7a4 4 0 0 1 0 8H5z"/></svg></div>
+              <div><div class="strong">Prescription issued — Dr. Anita Deshmukh</div><div class="muted small">Metformin, Vitamin D3, Atorvastatin + 2 more</div></div>
+              <div class="spacer"></div><div class="muted small">07 Jun</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-visit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+              <div><div class="strong">Telemedicine consultation</div><div class="muted small">Dr. Anita Deshmukh · Diabetology follow-up</div></div>
+              <div class="spacer"></div><div class="muted small">07 Jun</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/></svg></div>
+              <div><div class="strong">Invoice raised — ₹1,250</div><div class="muted small">INV-2026-0507 · Comprehensive Health Panel</div></div>
+              <div class="spacer"></div><div class="muted small">07 Jun</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="month-h">May 2026</div>
+        <div class="card">
+          <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+            <div class="list-row">
+              <div class="kind-ico ki-visit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+              <div><div class="strong">In-clinic consultation</div><div class="muted small">Dr. Anita Deshmukh · Routine diabetes review</div></div>
+              <div class="spacer"></div><div class="muted small">12 May</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/></svg></div>
+              <div><div class="strong">Payment received — ₹800</div><div class="muted small">INV-2026-0418 · Consultation</div></div>
+              <div class="spacer"></div><div class="muted small">12 May</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/></svg></div>
+              <div><div class="strong">Random Blood Sugar test</div><div class="muted small">Result: 142 mg/dL · within target range</div></div>
+              <div class="spacer"></div><div class="muted small">05 May</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-visit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+              <div><div class="strong">ABHA health record linked</div><div class="muted small">ZiffyHealth Clinic added to your linked facilities</div></div>
+              <div class="spacer"></div><div class="muted small">02 May</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 8. PROFILE ============ -->
+      <section class="screen" id="profile">
+        <h1 class="page-h">Profile</h1>
+        <div class="page-sub">Your personal and health information.</div>
+
+        <div class="card pad" style="margin-bottom:16px;">
+          <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+            <div class="avatar-lg">AI</div>
+            <div>
+              <div style="font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--text-strong);">Ananya R. Iyer</div>
+              <div class="muted small" style="margin:4px 0 8px;">32 years · Female</div>
+              <div class="chips">
+                <span class="badge neutral">ZH-2026-0612</span>
+                <span class="badge primary">ABHA · 14-xxxx-xxxx-4182</span>
+              </div>
+            </div>
+            <div class="spacer" style="flex:1;"></div>
+            <button class="btn btn-outline sm">Edit profile</button>
+          </div>
+        </div>
+
+        <div class="row cols-2">
+          <div class="card">
+            <div class="card-head"><h3>Personal information</h3><span class="spacer"></span><button class="btn btn-outline sm">Edit</button></div>
+            <div class="card-body" style="padding-top:6px; padding-bottom:6px;">
+              <div class="kv"><span class="k">Date of birth</span><span class="v">14 Feb 1994</span></div>
+              <div class="kv"><span class="k">Sex</span><span class="v">Female</span></div>
+              <div class="kv"><span class="k">Phone</span><span class="v mono">+91 98765 43210</span></div>
+              <div class="kv"><span class="k">Email</span><span class="v">ananya.iyer@example.com</span></div>
+              <div class="kv"><span class="k">Blood group</span><span class="v">O+</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Health profile</h3></div>
+            <div class="card-body">
+              <div class="label" style="margin-bottom:8px;">Allergies</div>
+              <div class="chips" style="margin-bottom:16px;">
+                <span class="badge critical">Penicillin</span>
+                <span class="badge critical">Sulfa drugs</span>
+                <span class="badge critical">Peanuts</span>
+              </div>
+              <div class="label" style="margin-bottom:8px;">Active conditions</div>
+              <div class="chips">
+                <span class="badge neutral">Type 2 Diabetes</span>
+                <span class="badge neutral">Vitamin D deficiency</span>
+                <span class="badge neutral">Hypothyroidism</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row cols-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="card-head"><h3>Linked clinics</h3></div>
+            <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+              <div class="list-row">
+                <div class="av">ZH</div>
+                <div><div class="strong">ZiffyHealth Clinic</div><div class="muted small">Bengaluru · Primary facility</div></div>
+                <div class="spacer"></div>
+                <span class="badge normal">Active</span>
+              </div>
+              <div class="list-row">
+                <div class="av">CD</div>
+                <div><div class="strong">CardioQ Diagnostics</div><div class="muted small">Bengaluru · Lab partner</div></div>
+                <div class="spacer"></div>
+                <span class="badge normal">Active</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>ABHA</h3></div>
+            <div class="card-body">
+              <div class="kv"><span class="k">ABHA number</span><span class="v mono">14-xxxx-xxxx-4182</span></div>
+              <div class="kv"><span class="k">ABHA address</span><span class="v">ananya.iyer@abdm</span></div>
+              <div class="kv"><span class="k">KYC status</span><span class="v"><span class="badge normal">Verified</span></span></div>
+              <div style="margin-top:14px;"><button class="btn btn-outline block">Manage ABHA linkage</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 9. CONSULT ============ -->
+      <section class="screen" id="consult">
+        <div class="row cols-12">
+          <div class="dark-panel vstage">
+            <div class="who-card">
+              <div class="av">AD</div>
+              <div class="nm">Dr. Anita Deshmukh</div>
+              <div class="sp">Diabetology · ZiffyHealth Clinic</div>
+            </div>
+            <div class="pip">You</div>
+            <div class="controls">
+              <button class="vbtn" title="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+              <button class="vbtn" title="Camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></button>
+              <button class="vbtn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+              <button class="vbtn leave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a16 16 0 0 0 16 16l2.5-2.5-4-4-2.5 1.5a11 11 0 0 1-4.5-4.5L8.5 9.5l-4-4z"/></svg>Leave</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Consultation details</h3><span class="spacer"></span><span class="badge normal"><span class="dot"></span>Connected</span></div>
+            <div class="card-body">
+              <div class="kv"><span class="k">Doctor</span><span class="v">Dr. Anita Deshmukh</span></div>
+              <div class="kv"><span class="k">Specialty</span><span class="v">Diabetology</span></div>
+              <div class="kv"><span class="k">Appointment</span><span class="v">Today · 10:30 AM</span></div>
+              <div class="kv"><span class="k">Duration</span><span class="v mono">08:42</span></div>
+              <div class="divider"></div>
+              <div class="label" style="margin-bottom:6px;">In this call</div>
+              <div class="muted small" style="margin-bottom:14px;">Reviewing your latest HbA1c and Vitamin D results. Please keep your recent lab report open for reference.</div>
+              <button class="btn btn-outline block">Leave call</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 10. NOTIFICATIONS ============ -->
+      <section class="screen" id="notifications">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:6px;">
+          <div>
+            <h1 class="page-h">Notifications</h1>
+            <div class="page-sub">Reminders, results, and account alerts.</div>
+          </div>
+          <button class="btn btn-ghost sm">Mark all read</button>
+        </div>
+
+        <div class="month-h">Today</div>
+        <div class="card">
+          <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+            <div class="list-row">
+              <div class="kind-ico ki-visit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+              <div><div class="strong">Appointment reminder</div><div class="muted small">Telemedicine with Dr. Anita Deshmukh on 5 Jul at 10:30 AM.</div></div>
+              <div class="spacer"></div><div class="muted small">2h ago</div>
+              <span class="unread-dot"></span>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/></svg></div>
+              <div><div class="strong">Lab report ready</div><div class="muted small">Your Comprehensive Health Panel results are now available.</div></div>
+              <div class="spacer"></div><div class="muted small">5h ago</div>
+              <span class="unread-dot"></span>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-alert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/></svg></div>
+              <div><div class="strong">Payment due</div><div class="muted small">Invoice INV-2026-0507 of ₹1,250 is awaiting payment.</div></div>
+              <div class="spacer"></div><div class="muted small">9h ago</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="month-h">Earlier</div>
+        <div class="card">
+          <div class="card-body" style="padding-top:4px; padding-bottom:4px;">
+            <div class="list-row">
+              <div class="kind-ico ki-rx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h7a4 4 0 0 1 0 8H5z"/></svg></div>
+              <div><div class="strong">Prescription issued</div><div class="muted small">Dr. Anita Deshmukh added 5 medications to your records.</div></div>
+              <div class="spacer"></div><div class="muted small">2 days ago</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-pay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/></svg></div>
+              <div><div class="strong">Payment confirmed</div><div class="muted small">₹800 received for INV-2026-0418 · Consultation.</div></div>
+              <div class="spacer"></div><div class="muted small">12 May</div>
+            </div>
+            <div class="list-row">
+              <div class="kind-ico ki-visit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+              <div><div class="strong">Appointment completed</div><div class="muted small">Visit summary from Dr. Anita Deshmukh is available.</div></div>
+              <div class="spacer"></div><div class="muted small">12 May</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var navItems = document.querySelectorAll('.nav-item');
+    var screens = document.querySelectorAll('.screen');
+    var title = document.getElementById('pageTitle');
+
+    function show(id, titleText) {
+      navItems.forEach(function (n) {
+        n.classList.toggle('active', n.getAttribute('data-screen') === id);
+      });
+      screens.forEach(function (s) {
+        s.classList.toggle('active', s.id === id);
+      });
+      if (titleText) title.textContent = titleText;
+      var content = document.querySelector('.content');
+      if (content) content.scrollTop = 0;
+    }
+
+    navItems.forEach(function (n) {
+      n.addEventListener('click', function () {
+        show(n.getAttribute('data-screen'), n.getAttribute('data-title'));
+      });
+    });
+
+    // quick-link tiles + "Book new" buttons that jump to a screen
+    document.querySelectorAll('[data-jump]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var id = el.getAttribute('data-jump');
+        var match = document.querySelector('.nav-item[data-screen="' + id + '"]');
+        show(id, match ? match.getAttribute('data-title') : null);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

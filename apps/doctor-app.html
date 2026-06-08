@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZiffyHealth — Doctor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"><img src="assets/brand-1-d898a4cf.jpg" alt=""></div>
+      <div>
+        <div class="name">Ziffy<b>Health</b></div>
+        <div class="sub">Doctor</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-label">Clinic</div>
+      <div class="nav-item active" data-screen="dashboard" data-title="Dashboard">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-screen="patients" data-title="Patients">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Patients</span>
+      </div>
+      <div class="nav-item" data-screen="patient-detail" data-title="Rajesh Kumar Sharma" data-crumb="Patients /">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Patient profile</span>
+      </div>
+
+      <div class="nav-label">Care</div>
+      <div class="nav-item" data-screen="encounter" data-title="Encounter">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        <span>Encounters</span>
+      </div>
+      <div class="nav-item" data-screen="prescribe" data-title="Prescribe">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+        <span>Prescriptions</span>
+      </div>
+      <div class="nav-item" data-screen="lab-orders" data-title="Lab orders">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.31"/><path d="M14 9.3V2"/><path d="M8.5 2h7"/><path d="M14 9.3a6.5 6.5 0 1 1-4 0"/><path d="M5.58 16.5h12.85"/></svg>
+        <span>Lab orders</span>
+      </div>
+      <div class="nav-item" data-screen="lab-order-detail" data-title="ZH-LAB-2026-0419" data-crumb="Lab orders /">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        <span>Lab results</span>
+      </div>
+      <div class="nav-item" data-screen="heart-score" data-title="Heart Score">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg>
+        <span>Heart Score</span>
+      </div>
+
+      <div class="nav-label">Connect</div>
+      <div class="nav-item" data-screen="telemedicine" data-title="Telemedicine">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+        <span>Telemedicine</span>
+        <span class="badge-dot">3</span>
+      </div>
+      <div class="nav-item" data-screen="video-room" data-title="Video consultation">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.55-2.28A1 1 0 0 1 21 8.62v6.76a1 1 0 0 1-1.45.9L15 14"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>
+        <span>Video room</span>
+      </div>
+    </nav>
+
+    <div class="docchip">
+      <div class="av">AD</div>
+      <div>
+        <div class="who">Dr. Anita Deshmukh</div>
+        <div class="role">Internal Medicine</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <label class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search patients, orders…">
+      </label>
+      <div class="spacer"></div>
+      <button class="icon-btn" aria-label="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="dot"></span>
+      </button>
+      <div class="avatar">AD</div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============== 1. DASHBOARD ============== -->
+      <section class="screen active" id="dashboard">
+        <div class="row cols-4">
+          <div class="stat accent">
+            <div class="label"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Today's appointments</div>
+            <div class="num">14</div>
+            <div class="delta up">5 upcoming</div>
+          </div>
+          <div class="stat">
+            <div class="label"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Patients seen</div>
+            <div class="num">9</div>
+            <div class="delta up">on track</div>
+          </div>
+          <div class="stat">
+            <div class="label"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Pending lab results</div>
+            <div class="num">6</div>
+            <div class="delta">awaiting</div>
+          </div>
+          <div class="stat">
+            <div class="label"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg> Abnormal flags</div>
+            <div class="num">3</div>
+            <div class="delta down">needs review</div>
+          </div>
+        </div>
+
+        <div class="row cols-12" style="margin-top:16px;">
+          <div class="card">
+            <div class="card-head"><h3>Today's queue</h3><div class="spacer"></div><span class="muted small">7 Jun 2026</span></div>
+            <table class="table">
+              <thead><tr><th>Time</th><th>Patient</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="mono">09:00</td>
+                  <td><div class="name">Rajesh Kumar Sharma</div><div class="sub">ZH-PT-20455</div></td>
+                  <td>Hypertension follow-up</td>
+                  <td><span class="badge normal"><span class="dot"></span>Checked-in</span></td>
+                  <td><button class="btn sm btn-primary">Start</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">09:30</td>
+                  <td><div class="name">Meera Iyer</div><div class="sub">ZH-PT-20461</div></td>
+                  <td>Chest pain evaluation</td>
+                  <td><span class="badge alert"><span class="dot"></span>Waiting</span></td>
+                  <td><button class="btn sm btn-primary">Start</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">10:00</td>
+                  <td><div class="name">Arjun Nair</div><div class="sub">ZH-PT-20470</div></td>
+                  <td>Diabetes review</td>
+                  <td><span class="badge primary"><span class="dot"></span>In progress</span></td>
+                  <td><button class="btn sm btn-primary">Start</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">10:30</td>
+                  <td><div class="name">Sunita Patel</div><div class="sub">ZH-PT-20482</div></td>
+                  <td>Thyroid consult</td>
+                  <td><span class="badge normal"><span class="dot"></span>Checked-in</span></td>
+                  <td><button class="btn sm btn-primary">Start</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">11:00</td>
+                  <td><div class="name">Vikram Singh</div><div class="sub">ZH-PT-20491</div></td>
+                  <td>Post-op follow-up</td>
+                  <td><span class="badge neutral"><span class="dot"></span>Done</span></td>
+                  <td><button class="btn sm btn-primary">Start</button></td>
+                </tr>
+                <tr>
+                  <td class="mono">11:30</td>
+                  <td><div class="name">Kavya Reddy</div><div class="sub">ZH-PT-20503</div></td>
+                  <td>Annual check-up</td>
+                  <td><span class="badge alert"><span class="dot"></span>Waiting</span></td>
+                  <td><button class="btn sm btn-primary">Start</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div>
+            <div class="card">
+              <div class="card-head"><h3>Abnormal lab results</h3></div>
+              <div class="card-body" style="padding-top:4px;padding-bottom:4px;">
+                <div class="list-row">
+                  <div class="av">MI</div>
+                  <div><div class="name">Meera Iyer</div><div class="sub">Troponin I — 0.42 ng/mL</div></div>
+                  <div class="spacer"></div>
+                  <span class="badge critical">Critical</span>
+                </div>
+                <div class="list-row">
+                  <div class="av">AN</div>
+                  <div><div class="name">Arjun Nair</div><div class="sub">HbA1c — 9.1 %</div></div>
+                  <div class="spacer"></div>
+                  <span class="badge alert">High</span>
+                </div>
+                <div class="list-row">
+                  <div class="av">RK</div>
+                  <div><div class="name">Rajesh Sharma</div><div class="sub">LDL — 168 mg/dL</div></div>
+                  <div class="spacer"></div>
+                  <span class="badge alert">High</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+              <div class="card-head"><h3>Recent encounters</h3></div>
+              <div class="card-body" style="padding-top:4px;padding-bottom:4px;">
+                <div class="list-row">
+                  <div class="av">VS</div>
+                  <div><div class="name">Vikram Singh</div><div class="sub">Post-op follow-up · today</div></div>
+                  <div class="spacer"></div>
+                  <span class="muted small">11:00</span>
+                </div>
+                <div class="list-row">
+                  <div class="av">SP</div>
+                  <div><div class="name">Sunita Patel</div><div class="sub">Thyroid consult · today</div></div>
+                  <div class="spacer"></div>
+                  <span class="muted small">08:30</span>
+                </div>
+                <div class="list-row">
+                  <div class="av">KR</div>
+                  <div><div class="name">Kavya Reddy</div><div class="sub">Annual check-up · yesterday</div></div>
+                  <div class="spacer"></div>
+                  <span class="muted small">16:20</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 2. PATIENTS ============== -->
+      <section class="screen" id="patients">
+        <h1 class="page-h">Patients</h1>
+        <p class="page-sub">Browse and manage your patient roster.</p>
+
+        <div class="row" style="grid-template-columns:1fr auto;align-items:center;margin-bottom:16px;">
+          <div class="chips">
+            <span class="chip active">All active</span>
+            <span class="chip">All</span>
+            <span class="chip">New</span>
+          </div>
+          <label class="search" style="max-width:280px;margin-left:0;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Filter patients…">
+          </label>
+        </div>
+
+        <div class="card">
+          <table class="table">
+            <thead><tr><th>Patient</th><th>Age / Sex</th><th>Last visit</th><th>Conditions</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="goto('patient-detail')">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="list-row" style="padding:0;border:0;"><div class="av">RK</div></div><div><div class="name">Rajesh Kumar Sharma</div><div class="sub">ZH-PT-20455</div></div></div></td>
+                <td>54 · M</td><td>7 Jun 2026</td>
+                <td><span class="badge neutral">Hypertension</span> <span class="badge neutral">T2DM</span></td>
+                <td><span class="badge normal"><span class="dot"></span>Active</span></td>
+                <td><button class="btn sm btn-outline">View</button></td>
+              </tr>
+              <tr class="clickable" onclick="goto('patient-detail')">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="list-row" style="padding:0;border:0;"><div class="av">MI</div></div><div><div class="name">Meera Iyer</div><div class="sub">ZH-PT-20461</div></div></div></td>
+                <td>61 · F</td><td>7 Jun 2026</td>
+                <td><span class="badge neutral">CAD</span></td>
+                <td><span class="badge alert"><span class="dot"></span>Monitoring</span></td>
+                <td><button class="btn sm btn-outline">View</button></td>
+              </tr>
+              <tr class="clickable" onclick="goto('patient-detail')">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="list-row" style="padding:0;border:0;"><div class="av">AN</div></div><div><div class="name">Arjun Nair</div><div class="sub">ZH-PT-20470</div></div></div></td>
+                <td>48 · M</td><td>7 Jun 2026</td>
+                <td><span class="badge neutral">T2DM</span> <span class="badge neutral">Obesity</span></td>
+                <td><span class="badge normal"><span class="dot"></span>Active</span></td>
+                <td><button class="btn sm btn-outline">View</button></td>
+              </tr>
+              <tr class="clickable" onclick="goto('patient-detail')">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="list-row" style="padding:0;border:0;"><div class="av">SP</div></div><div><div class="name">Sunita Patel</div><div class="sub">ZH-PT-20482</div></div></div></td>
+                <td>39 · F</td><td>7 Jun 2026</td>
+                <td><span class="badge neutral">Hypothyroid</span></td>
+                <td><span class="badge normal"><span class="dot"></span>Active</span></td>
+                <td><button class="btn sm btn-outline">View</button></td>
+              </tr>
+              <tr class="clickable" onclick="goto('patient-detail')">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="list-row" style="padding:0;border:0;"><div class="av">VS</div></div><div><div class="name">Vikram Singh</div><div class="sub">ZH-PT-20491</div></div></div></td>
+                <td>57 · M</td><td>7 Jun 2026</td>
+                <td><span class="badge neutral">Post-CABG</span></td>
+                <td><span class="badge normal"><span class="dot"></span>Active</span></td>
+                <td><button class="btn sm btn-outline">View</button></td>
+              </tr>
+              <tr class="clickable" onclick="goto('patient-detail')">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="list-row" style="padding:0;border:0;"><div class="av">KR</div></div><div><div class="name">Kavya Reddy</div><div class="sub">ZH-PT-20503</div></div></div></td>
+                <td>29 · F</td><td>6 Jun 2026</td>
+                <td><span class="badge neutral">Anemia</span></td>
+                <td><span class="badge primary"><span class="dot"></span>New</span></td>
+                <td><button class="btn sm btn-outline">View</button></td>
+              </tr>
+              <tr class="clickable" onclick="goto('patient-detail')">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="list-row" style="padding:0;border:0;"><div class="av">DM</div></div><div><div class="name">Deepak Mehta</div><div class="sub">ZH-PT-20510</div></div></div></td>
+                <td>66 · M</td><td>4 Jun 2026</td>
+                <td><span class="badge neutral">COPD</span> <span class="badge neutral">HTN</span></td>
+                <td><span class="badge alert"><span class="dot"></span>Monitoring</span></td>
+                <td><button class="btn sm btn-outline">View</button></td>
+              </tr>
+              <tr class="clickable" onclick="goto('patient-detail')">
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="list-row" style="padding:0;border:0;"><div class="av">PR</div></div><div><div class="name">Priya Rao</div><div class="sub">ZH-PT-20518</div></div></div></td>
+                <td>44 · F</td><td>2 Jun 2026</td>
+                <td><span class="badge neutral">Migraine</span></td>
+                <td><span class="badge normal"><span class="dot"></span>Active</span></td>
+                <td><button class="btn sm btn-outline">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============== 3. PATIENT DETAIL ============== -->
+      <section class="screen" id="patient-detail">
+        <div class="card pad" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+          <div class="avatar-lg">RK</div>
+          <div style="flex:1;min-width:240px;">
+            <h2 style="font-size:20px;">Rajesh Kumar Sharma</h2>
+            <div class="muted" style="margin:4px 0 8px;">54 yrs · Male · MRN ZH-PT-20455 · O+</div>
+            <div class="chips">
+              <span class="badge critical">Allergy: Penicillin</span>
+              <span class="badge critical">Allergy: Sulfa</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-outline">Message</button>
+            <button class="btn btn-primary" onclick="goto('encounter')">New encounter</button>
+          </div>
+        </div>
+
+        <div class="tabbar" style="margin-top:20px;">
+          <div class="tab active" onclick="ptab(this,'pt-overview')">Overview</div>
+          <div class="tab" onclick="ptab(this,'pt-encounters')">Encounters</div>
+          <div class="tab" onclick="ptab(this,'pt-prescriptions')">Prescriptions</div>
+          <div class="tab" onclick="ptab(this,'pt-labs')">Lab results</div>
+          <div class="tab" onclick="ptab(this,'pt-vitals')">Vitals</div>
+          <div class="tab" onclick="ptab(this,'pt-timeline')">Timeline</div>
+        </div>
+
+        <div class="ptab-panel active" id="pt-overview">
+        <div class="row cols-2">
+          <div class="card">
+            <div class="card-head"><h3>Demographics &amp; contact</h3></div>
+            <div class="card-body">
+              <div class="kv"><span class="k">Date of birth</span><span class="v">12 Mar 1972</span></div>
+              <div class="kv"><span class="k">Phone</span><span class="v">+91 98200 41122</span></div>
+              <div class="kv"><span class="k">Email</span><span class="v">rajesh.sharma@example.com</span></div>
+              <div class="kv"><span class="k">Address</span><span class="v">Andheri West, Mumbai</span></div>
+              <div class="kv"><span class="k">Insurance</span><span class="v">Star Health · Active</span></div>
+              <div class="kv"><span class="k">Primary physician</span><span class="v">Dr. A. Deshmukh</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Active conditions &amp; recent vitals</h3></div>
+            <div class="card-body">
+              <div class="chips" style="margin-bottom:16px;">
+                <span class="badge neutral">Essential hypertension</span>
+                <span class="badge neutral">Type 2 diabetes</span>
+                <span class="badge neutral">Hyperlipidemia</span>
+              </div>
+              <div class="row cols-2" style="gap:12px;">
+                <div class="stat" style="box-shadow:none;">
+                  <div class="label">Blood pressure</div>
+                  <div class="num" style="font-size:22px;">148/92</div>
+                  <span class="badge borderline">Elevated</span>
+                </div>
+                <div class="stat" style="box-shadow:none;">
+                  <div class="label">Pulse</div>
+                  <div class="num" style="font-size:22px;">78 <span class="muted small">bpm</span></div>
+                  <span class="badge normal">Normal</span>
+                </div>
+                <div class="stat" style="box-shadow:none;">
+                  <div class="label">HbA1c</div>
+                  <div class="num" style="font-size:22px;">6.9 <span class="muted small">%</span></div>
+                  <span class="badge borderline">Elevated</span>
+                </div>
+                <div class="stat" style="box-shadow:none;">
+                  <div class="label">BMI</div>
+                  <div class="num" style="font-size:22px;">27.7</div>
+                  <span class="badge borderline">Overweight</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-head"><h3>Recent lab results</h3></div>
+          <table class="table">
+            <thead><tr><th>Test</th><th>Value</th><th>Reference</th><th>Date</th><th>Flag</th></tr></thead>
+            <tbody>
+              <tr><td>Fasting glucose</td><td class="mono">132 mg/dL</td><td class="muted">70–100</td><td>5 Jun 2026</td><td><span class="badge alert">High</span></td></tr>
+              <tr><td>LDL cholesterol</td><td class="mono">168 mg/dL</td><td class="muted">&lt; 100</td><td>5 Jun 2026</td><td><span class="badge alert">High</span></td></tr>
+              <tr><td>HbA1c</td><td class="mono">6.9 %</td><td class="muted">4.5–6.5</td><td>5 Jun 2026</td><td><span class="badge borderline">Borderline</span></td></tr>
+              <tr><td>Creatinine</td><td class="mono">0.9 mg/dL</td><td class="muted">0.7–1.3</td><td>5 Jun 2026</td><td><span class="badge normal">Normal</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        </div><!-- /pt-overview -->
+
+        <!-- ===== Sub-tab: Encounters ===== -->
+        <div class="ptab-panel" id="pt-encounters">
+          <div class="card">
+            <div class="card-head"><h3>Past encounters</h3></div>
+            <table class="table">
+              <thead><tr><th>Date</th><th>Type</th><th>Diagnosis</th><th>Doctor</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>5 Jun 2026</td><td>In-clinic</td>
+                  <td>Hypertension follow-up · T2DM</td><td>Dr. A. Deshmukh</td>
+                  <td><button class="btn sm btn-outline" onclick="goto('encounter')">Open</button></td>
+                </tr>
+                <tr>
+                  <td>22 Apr 2026</td><td>Telemedicine</td>
+                  <td>Hyperlipidemia review</td><td>Dr. A. Deshmukh</td>
+                  <td><button class="btn sm btn-outline" onclick="goto('encounter')">Open</button></td>
+                </tr>
+                <tr>
+                  <td>14 Feb 2026</td><td>In-clinic</td>
+                  <td>Routine diabetes check</td><td>Dr. R. Mehta</td>
+                  <td><button class="btn sm btn-outline" onclick="goto('encounter')">Open</button></td>
+                </tr>
+                <tr>
+                  <td>3 Dec 2025</td><td>In-clinic</td>
+                  <td>New HTN diagnosis</td><td>Dr. A. Deshmukh</td>
+                  <td><button class="btn sm btn-outline" onclick="goto('encounter')">Open</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ===== Sub-tab: Prescriptions ===== -->
+        <div class="ptab-panel" id="pt-prescriptions">
+          <div class="card">
+            <div class="card-head"><h3>Prescriptions</h3></div>
+            <table class="table">
+              <thead><tr><th>Date</th><th>Drugs</th><th>Doctor</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>5 Jun 2026</td>
+                  <td><div class="name">Telmisartan+Amlodipine, Metformin SR, Atorvastatin</div><div class="sub">3 medications</div></td>
+                  <td>Dr. A. Deshmukh</td>
+                  <td><span class="badge normal"><span class="dot"></span>Active</span></td>
+                  <td><a class="btn btn-outline sm" href="../design/prescription.html" target="_blank">View</a></td>
+                </tr>
+                <tr>
+                  <td>22 Apr 2026</td>
+                  <td><div class="name">Telmisartan, Metformin, Aspirin</div><div class="sub">3 medications</div></td>
+                  <td>Dr. A. Deshmukh</td>
+                  <td><span class="badge neutral"><span class="dot"></span>Superseded</span></td>
+                  <td><a class="btn btn-outline sm" href="../design/prescription.html" target="_blank">View</a></td>
+                </tr>
+                <tr>
+                  <td>14 Feb 2026</td>
+                  <td><div class="name">Metformin, Glimepiride</div><div class="sub">2 medications</div></td>
+                  <td>Dr. R. Mehta</td>
+                  <td><span class="badge neutral"><span class="dot"></span>Expired</span></td>
+                  <td><a class="btn btn-outline sm" href="../design/prescription.html" target="_blank">View</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ===== Sub-tab: Lab results (all 3 report types) ===== -->
+        <div class="ptab-panel" id="pt-labs">
+          <div class="card">
+            <div class="card-head">
+              <h3>Reports &amp; panels</h3>
+              <div class="spacer"></div>
+              <a class="btn btn-outline sm" href="../design/report-final.html" target="_blank">Open interactive health view ↗</a>
+            </div>
+            <table class="table">
+              <thead><tr><th>Report</th><th>Source</th><th>Date</th><th>Result</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div class="name">Comprehensive panel</div><div class="sub">32 biomarkers · 8 profiles</div></td>
+                  <td>ZiffyHealth Lab</td><td>06 Jun 2026</td>
+                  <td><span class="badge normal">25</span> <span class="badge borderline">1</span> <span class="badge alert">6</span> <span class="badge critical">2</span></td>
+                  <td><a class="btn btn-primary sm" href="../design/static-report.html" target="_blank">View</a></td>
+                </tr>
+                <tr>
+                  <td><div class="name">Cardiac Panel</div><div class="sub">6 markers · individual</div></td>
+                  <td>Boditech iChroma II</td><td>22 May 2026</td>
+                  <td><span class="badge critical">2</span> <span class="badge alert">4</span></td>
+                  <td><a class="btn btn-primary sm" href="../design/individual-report.html" target="_blank">View</a></td>
+                </tr>
+                <tr>
+                  <td><div class="name">Arterial Blood Gas</div><div class="sub">ABG · individual</div></td>
+                  <td>Edan i15</td><td>05 Jun 2026</td>
+                  <td><span class="badge alert">2</span> <span class="badge borderline">3</span></td>
+                  <td><a class="btn btn-primary sm" href="../design/individual-report.html" target="_blank">View</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ===== Sub-tab: Vitals ===== -->
+        <div class="ptab-panel" id="pt-vitals">
+          <div class="card">
+            <div class="card-head"><h3>Vitals over time</h3></div>
+            <table class="table">
+              <thead><tr><th>Date</th><th>BP</th><th>Pulse</th><th>Temp</th><th>SpO₂</th><th>Weight</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>5 Jun 2026 <span class="badge borderline">Latest</span></td>
+                  <td class="mono">148/92</td><td class="mono">78</td><td class="mono">98.4°F</td><td class="mono">98%</td><td class="mono">82 kg</td>
+                </tr>
+                <tr>
+                  <td>22 Apr 2026</td>
+                  <td class="mono">144/90</td><td class="mono">76</td><td class="mono">98.2°F</td><td class="mono">98%</td><td class="mono">83 kg</td>
+                </tr>
+                <tr>
+                  <td>14 Feb 2026</td>
+                  <td class="mono">150/94</td><td class="mono">80</td><td class="mono">98.6°F</td><td class="mono">97%</td><td class="mono">84 kg</td>
+                </tr>
+                <tr>
+                  <td>3 Dec 2025</td>
+                  <td class="mono">152/96</td><td class="mono">82</td><td class="mono">98.4°F</td><td class="mono">98%</td><td class="mono">85 kg</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ===== Sub-tab: Timeline ===== -->
+        <div class="ptab-panel" id="pt-timeline">
+          <div class="card">
+            <div class="card-head"><h3>Timeline</h3></div>
+            <div class="card-body" style="padding-top:4px;padding-bottom:4px;">
+              <div class="list-row">
+                <div class="av">LB</div>
+                <div><div class="name">Comprehensive panel resulted</div><div class="sub">32 biomarkers · 8 flagged</div></div>
+                <div class="spacer"></div><span class="muted small">6 Jun 2026</span>
+              </div>
+              <div class="list-row">
+                <div class="av">EN</div>
+                <div><div class="name">In-clinic encounter</div><div class="sub">Hypertension follow-up · Dr. Deshmukh</div></div>
+                <div class="spacer"></div><span class="muted small">5 Jun 2026</span>
+              </div>
+              <div class="list-row">
+                <div class="av">RX</div>
+                <div><div class="name">Prescription issued</div><div class="sub">3 medications · 30 days</div></div>
+                <div class="spacer"></div><span class="muted small">5 Jun 2026</span>
+              </div>
+              <div class="list-row">
+                <div class="av">LB</div>
+                <div><div class="name">Cardiac panel resulted</div><div class="sub">iChroma II · 2 critical</div></div>
+                <div class="spacer"></div><span class="muted small">22 May 2026</span>
+              </div>
+              <div class="list-row">
+                <div class="av">EN</div>
+                <div><div class="name">Telemedicine consultation</div><div class="sub">Hyperlipidemia review · Dr. Deshmukh</div></div>
+                <div class="spacer"></div><span class="muted small">22 Apr 2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 4. ENCOUNTER ============== -->
+      <section class="screen" id="encounter">
+        <div class="row cols-12">
+          <div>
+            <div class="card">
+              <div class="card-head"><h3>Chief complaint</h3></div>
+              <div class="card-body">
+                <textarea class="input" rows="2" placeholder="Patient's primary concern…">Follow-up for hypertension and elevated blood sugar. Reports occasional headaches.</textarea>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+              <div class="card-head"><h3>Vital signs</h3></div>
+              <div class="card-body">
+                <div class="row cols-4">
+                  <div class="field"><label class="label">Blood pressure</label><input class="input" value="148 / 92"></div>
+                  <div class="field"><label class="label">Pulse (bpm)</label><input class="input" value="78"></div>
+                  <div class="field"><label class="label">Temp (°F)</label><input class="input" value="98.4"></div>
+                  <div class="field"><label class="label">SpO₂ (%)</label><input class="input" value="98"></div>
+                  <div class="field"><label class="label">Weight (kg)</label><input class="input" value="82"></div>
+                  <div class="field"><label class="label">Height (cm)</label><input class="input" value="172"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+              <div class="card-head"><h3>Diagnosis (ICD-10)</h3></div>
+              <div class="card-body">
+                <div class="chips" style="margin-bottom:12px;">
+                  <span class="chip active">Essential hypertension I10 ✕</span>
+                  <span class="chip active">Type 2 diabetes E11.9 ✕</span>
+                </div>
+                <input class="input" placeholder="Add diagnosis or ICD-10 code…">
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+              <div class="card-head"><h3>Clinical notes (SOAP)</h3></div>
+              <div class="card-body">
+                <div class="field"><label class="label">Subjective</label><textarea class="input" rows="2" placeholder="Patient-reported symptoms…">Headaches 2–3×/week, no chest pain or dyspnea. Adherent to medication.</textarea></div>
+                <div class="field"><label class="label">Objective</label><textarea class="input" rows="2" placeholder="Exam findings…">BP 148/92, HR 78 reg. Heart S1S2 normal, lungs clear. No edema.</textarea></div>
+                <div class="field"><label class="label">Assessment</label><textarea class="input" rows="2" placeholder="Clinical impression…">Suboptimally controlled HTN and T2DM. Hyperlipidemia.</textarea></div>
+                <div class="field" style="margin-bottom:0;"><label class="label">Plan</label><textarea class="input" rows="2" placeholder="Treatment plan…">Up-titrate antihypertensive, add statin, recheck labs in 6 weeks.</textarea></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card pad" style="display:flex;align-items:center;gap:12px;">
+              <div class="list-row" style="padding:0;border:0;"><div class="av" style="width:48px;height:48px;">RK</div></div>
+              <div><div class="name">Rajesh Kumar Sharma</div><div class="sub">54 yrs · Male · ZH-PT-20455</div></div>
+            </div>
+
+            <div class="card" style="margin-top:16px;background:var(--zone-critical-bg);border-color:transparent;">
+              <div class="card-body" style="display:flex;gap:10px;align-items:flex-start;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--zone-critical-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto;margin-top:2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>
+                <div><div class="strong" style="color:var(--zone-critical-text);">Allergies</div><div class="small" style="color:var(--zone-critical-text);">Penicillin, Sulfa</div></div>
+              </div>
+            </div>
+
+            <div class="card pad" style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
+              <button class="btn btn-outline block" onclick="goto('lab-orders')">Add lab order</button>
+              <button class="btn btn-outline block" onclick="goto('prescribe')">Prescribe</button>
+              <button class="btn btn-primary block">Finalize visit</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 5. PRESCRIBE ============== -->
+      <section class="screen" id="prescribe">
+        <div class="row cols-12">
+          <div>
+            <div class="card">
+              <div class="card-head"><h3>Add medication</h3></div>
+              <div class="card-body">
+                <div style="display:flex;gap:10px;">
+                  <label class="search" style="flex:1;max-width:none;margin:0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Search drug name…">
+                  </label>
+                  <button class="btn btn-primary">Add</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+              <div class="card-head"><h3>Prescription</h3></div>
+              <table class="table">
+                <thead><tr><th>#</th><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Qty</th><th>Refills</th><th></th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td class="mono">1</td>
+                    <td><div class="name">Telmisartan + Amlodipine</div><div class="sub">40 mg / 5 mg · Tablet</div></td>
+                    <td class="mono">1-0-1</td><td>Twice daily</td><td>30 days</td><td>60</td><td>2</td>
+                    <td><button class="btn-ghost btn sm">✕</button></td>
+                  </tr>
+                  <tr>
+                    <td class="mono">2</td>
+                    <td><div class="name">Metformin SR</div><div class="sub">1000 mg · Tablet</div></td>
+                    <td class="mono">1-0-1</td><td>Twice daily</td><td>30 days</td><td>60</td><td>2</td>
+                    <td><button class="btn-ghost btn sm">✕</button></td>
+                  </tr>
+                  <tr>
+                    <td class="mono">3</td>
+                    <td><div class="name">Atorvastatin</div><div class="sub">20 mg · Tablet</div></td>
+                    <td class="mono">0-0-1</td><td>Once at night</td><td>30 days</td><td>30</td><td>2</td>
+                    <td><button class="btn-ghost btn sm">✕</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+              <div class="card-head"><h3>Advice</h3></div>
+              <div class="card-body">
+                <textarea class="input" rows="3" placeholder="Diet, lifestyle, and follow-up advice…">Low-salt, low-sugar diet. 30 min brisk walk daily. Recheck BP at home weekly. Review in 6 weeks.</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card pad" style="display:flex;align-items:center;gap:12px;">
+              <div class="list-row" style="padding:0;border:0;"><div class="av" style="width:48px;height:48px;">RK</div></div>
+              <div><div class="name">Rajesh Kumar Sharma</div><div class="sub">54 yrs · Male</div></div>
+            </div>
+            <div class="card" style="margin-top:16px;background:var(--zone-critical-bg);border-color:transparent;">
+              <div class="card-body" style="display:flex;gap:10px;align-items:flex-start;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--zone-critical-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto;margin-top:2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>
+                <div><div class="strong" style="color:var(--zone-critical-text);">Allergies</div><div class="small" style="color:var(--zone-critical-text);">Penicillin, Sulfa — check before prescribing</div></div>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <button class="btn btn-primary block">Sign &amp; issue Rx</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 6. LAB ORDERS ============== -->
+      <section class="screen" id="lab-orders">
+        <div class="row cols-4" style="margin-bottom:16px;">
+          <div class="stat"><div class="label">Draft</div><div class="num">2</div></div>
+          <div class="stat"><div class="label">Submitted</div><div class="num">5</div></div>
+          <div class="stat"><div class="label">Collected</div><div class="num">3</div></div>
+          <div class="stat"><div class="label">Resulted</div><div class="num">8</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Lab orders</h3>
+            <div class="spacer"></div>
+            <button class="btn sm btn-primary">New order</button>
+          </div>
+          <div class="card-body" style="padding-bottom:0;">
+            <div class="chips">
+              <span class="chip active">All</span>
+              <span class="chip">Draft</span>
+              <span class="chip">Submitted</span>
+              <span class="chip">Collected</span>
+              <span class="chip">Resulted</span>
+            </div>
+          </div>
+          <table class="table">
+            <thead><tr><th>Order ID</th><th>Patient</th><th>Tests</th><th>Ordered</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="goto('lab-order-detail')"><td class="mono">ZH-LAB-2026-0419</td><td>Rajesh Sharma</td><td><span class="badge neutral">6 tests</span></td><td>5 Jun 2026</td><td><span class="badge normal">Resulted</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr class="clickable" onclick="goto('lab-order-detail')"><td class="mono">ZH-LAB-2026-0420</td><td>Meera Iyer</td><td><span class="badge neutral">4 tests</span></td><td>7 Jun 2026</td><td><span class="badge alert">Collected</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr class="clickable" onclick="goto('lab-order-detail')"><td class="mono">ZH-LAB-2026-0421</td><td>Arjun Nair</td><td><span class="badge neutral">3 tests</span></td><td>7 Jun 2026</td><td><span class="badge primary">Submitted</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr class="clickable" onclick="goto('lab-order-detail')"><td class="mono">ZH-LAB-2026-0422</td><td>Sunita Patel</td><td><span class="badge neutral">2 tests</span></td><td>7 Jun 2026</td><td><span class="badge neutral">Draft</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr class="clickable" onclick="goto('lab-order-detail')"><td class="mono">ZH-LAB-2026-0423</td><td>Vikram Singh</td><td><span class="badge neutral">5 tests</span></td><td>6 Jun 2026</td><td><span class="badge normal">Resulted</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr class="clickable" onclick="goto('lab-order-detail')"><td class="mono">ZH-LAB-2026-0424</td><td>Kavya Reddy</td><td><span class="badge neutral">7 tests</span></td><td>6 Jun 2026</td><td><span class="badge primary">Submitted</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr class="clickable" onclick="goto('lab-order-detail')"><td class="mono">ZH-LAB-2026-0425</td><td>Deepak Mehta</td><td><span class="badge neutral">4 tests</span></td><td>4 Jun 2026</td><td><span class="badge normal">Resulted</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============== 7. LAB ORDER DETAIL ============== -->
+      <section class="screen" id="lab-order-detail">
+        <div class="card pad" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:240px;">
+            <h2 style="font-size:20px;">ZH-LAB-2026-0419</h2>
+            <div class="muted" style="margin-top:4px;">Rajesh Kumar Sharma · Ordered by Dr. Deshmukh · 5 Jun 2026</div>
+          </div>
+          <span class="badge normal">Resulted</span>
+          <button class="btn btn-outline">Download report</button>
+        </div>
+
+        <div class="row cols-12" style="margin-top:16px;">
+          <div>
+            <div class="card">
+              <div class="card-head"><h3>Results</h3></div>
+              <table class="table">
+                <thead><tr><th>Analyte</th><th>Value</th><th>Unit</th><th>Reference</th><th style="width:140px;">Range</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>Hemoglobin</td><td class="mono"><span class="badge normal">14.2</span></td><td class="muted">g/dL</td><td class="muted">13–17</td>
+                    <td><div class="range"><span class="mark" style="left:35%;"></span></div></td>
+                  </tr>
+                  <tr>
+                    <td>Fasting glucose</td><td class="mono"><span class="badge alert">132</span></td><td class="muted">mg/dL</td><td class="muted">70–100</td>
+                    <td><div class="range"><span class="mark" style="left:88%;"></span></div></td>
+                  </tr>
+                  <tr>
+                    <td>HbA1c</td><td class="mono"><span class="badge borderline">6.9</span></td><td class="muted">%</td><td class="muted">4.5–6.5</td>
+                    <td><div class="range"><span class="mark" style="left:72%;"></span></div></td>
+                  </tr>
+                  <tr>
+                    <td>LDL cholesterol</td><td class="mono"><span class="badge alert">168</span></td><td class="muted">mg/dL</td><td class="muted">&lt; 100</td>
+                    <td><div class="range"><span class="mark" style="left:90%;"></span></div></td>
+                  </tr>
+                  <tr>
+                    <td>CK-MB</td><td class="mono"><span class="badge alert">8.4</span></td><td class="muted">ng/mL</td><td class="muted">&lt; 7</td>
+                    <td><div class="range"><span class="mark" style="left:85%;"></span></div></td>
+                  </tr>
+                  <tr>
+                    <td>Creatinine</td><td class="mono"><span class="badge normal">0.9</span></td><td class="muted">mg/dL</td><td class="muted">0.7–1.3</td>
+                    <td><div class="range"><span class="mark" style="left:40%;"></span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <div class="card-head"><h3>Tests requested</h3></div>
+              <div class="card-body" style="padding-top:6px;padding-bottom:6px;">
+                <div class="kv"><span class="k">Complete blood count</span><span class="v">Done</span></div>
+                <div class="kv"><span class="k">Fasting glucose</span><span class="v">Done</span></div>
+                <div class="kv"><span class="k">HbA1c</span><span class="v">Done</span></div>
+                <div class="kv"><span class="k">Lipid profile</span><span class="v">Done</span></div>
+                <div class="kv"><span class="k">Cardiac markers</span><span class="v">Done</span></div>
+                <div class="kv"><span class="k">Renal function</span><span class="v">Done</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 8. HEART SCORE ============== -->
+      <section class="screen" id="heart-score">
+        <div class="row cols-2">
+          <div class="card">
+            <div class="card-head"><h3>Risk factors</h3></div>
+            <div class="card-body">
+              <div class="field"><label class="label">Patient</label><input class="input" value="Rajesh Kumar Sharma"></div>
+              <div class="row cols-2" style="gap:12px;">
+                <div class="field"><label class="label">Age</label><input class="input" value="54"></div>
+                <div class="field"><label class="label">Sex</label><select class="select"><option>Male</option><option>Female</option></select></div>
+                <div class="field"><label class="label">Total cholesterol</label><input class="input" value="232 mg/dL"></div>
+                <div class="field"><label class="label">HDL</label><input class="input" value="38 mg/dL"></div>
+                <div class="field"><label class="label">Systolic BP</label><input class="input" value="148 mmHg"></div>
+                <div class="field"><label class="label">Smoker</label><select class="select"><option>No</option><option>Yes</option></select></div>
+                <div class="field"><label class="label">Diabetic</label><select class="select"><option selected>Yes</option><option>No</option></select></div>
+              </div>
+              <button class="btn btn-primary block" style="margin-top:6px;">Calculate</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>10-year risk</h3></div>
+            <div class="card-body" style="text-align:center;">
+              <div class="stat" style="box-shadow:none;border:0;align-items:center;padding-bottom:6px;">
+                <div class="num" style="font-size:64px;">14%</div>
+              </div>
+              <span class="badge alert" style="font-size:13px;padding:6px 14px;">Moderate risk</span>
+              <p class="muted" style="margin:18px auto 0;max-width:340px;">Estimated 10-year risk of a major cardiovascular event. Lifestyle modification plus statin therapy is recommended. Re-evaluate in 12 months or sooner if risk factors change.</p>
+              <button class="btn btn-outline" style="margin-top:18px;">Save to patient</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== 9. TELEMEDICINE ============== -->
+      <section class="screen" id="telemedicine">
+        <div class="card" style="border-color:var(--primary);box-shadow:0 0 0 3px rgba(81,173,59,.12);">
+          <div class="card-body" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div class="list-row" style="padding:0;border:0;"><div class="av" style="width:48px;height:48px;background:var(--primary-subtle);">RK</div></div>
+            <div style="flex:1;min-width:200px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span class="strong">Rajesh Kumar Sharma</span><span class="badge normal"><span class="dot"></span>Active</span></div>
+              <div class="muted small">Live now · started 4m ago · Video consultation</div>
+            </div>
+            <button class="btn btn-primary" onclick="goto('video-room')">Join</button>
+          </div>
+        </div>
+
+        <div class="card-head" style="border:0;padding-left:0;padding-right:0;margin-top:8px;">
+          <h3>Rooms</h3>
+          <div class="spacer"></div>
+          <button class="btn sm btn-outline">New room</button>
+        </div>
+
+        <div class="chips" style="margin-bottom:16px;">
+          <span class="chip active">Active</span>
+          <span class="chip">Created</span>
+          <span class="chip">Ended</span>
+        </div>
+
+        <div class="card">
+          <table class="table">
+            <thead><tr><th>Patient</th><th>Scheduled</th><th>Mode</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div class="name">Rajesh Kumar Sharma</div><div class="sub">ZH-PT-20455</div></td><td>Now</td><td>Video</td><td><span class="badge normal"><span class="dot"></span>Active</span></td><td><button class="btn sm btn-primary" onclick="goto('video-room')">Join</button></td></tr>
+              <tr><td><div class="name">Meera Iyer</div><div class="sub">ZH-PT-20461</div></td><td>Today 14:00</td><td>Video</td><td><span class="badge primary"><span class="dot"></span>Created</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr><td><div class="name">Arjun Nair</div><div class="sub">ZH-PT-20470</div></td><td>Today 15:30</td><td>Audio</td><td><span class="badge primary"><span class="dot"></span>Created</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr><td><div class="name">Sunita Patel</div><div class="sub">ZH-PT-20482</div></td><td>Yesterday</td><td>Video</td><td><span class="badge neutral"><span class="dot"></span>Ended</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+              <tr><td><div class="name">Kavya Reddy</div><div class="sub">ZH-PT-20503</div></td><td>Yesterday</td><td>Video</td><td><span class="badge neutral"><span class="dot"></span>Ended</span></td><td><button class="btn sm btn-outline">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============== 10. VIDEO ROOM ============== -->
+      <section class="screen" id="video-room">
+        <div class="row cols-12">
+          <div>
+            <div class="dark-panel" style="position:relative;height:420px;display:grid;place-items:center;overflow:hidden;">
+              <div style="text-align:center;">
+                <div class="avatar-lg" style="margin:0 auto 12px;width:88px;height:88px;font-size:34px;background:rgba(255,255,255,.12);">RK</div>
+                <div style="font-family:var(--font-display);font-weight:700;font-size:18px;color:#fff;">Rajesh Kumar Sharma</div>
+                <div style="font-size:12px;color:#8fb588;margin-top:2px;">Connected · 04:18</div>
+              </div>
+
+              <!-- self-view PIP -->
+              <div style="position:absolute;bottom:84px;right:18px;width:140px;height:96px;border-radius:12px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#cfe6c6;font-size:12px;">
+                <div style="text-align:center;"><div class="av" style="width:38px;height:38px;margin:0 auto 4px;background:var(--green-600);color:#fff;display:grid;place-items:center;border-radius:50%;font-weight:700;">AD</div>You</div>
+              </div>
+
+              <!-- control bar -->
+              <div style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.4);padding:10px 16px;border-radius:999px;">
+                <button class="icon-btn" style="border-radius:50%;background:rgba(255,255,255,.12);border-color:transparent;color:#fff;" aria-label="Mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></button>
+                <button class="icon-btn" style="border-radius:50%;background:rgba(255,255,255,.12);border-color:transparent;color:#fff;" aria-label="Camera"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></button>
+                <button class="icon-btn" style="border-radius:50%;background:rgba(255,255,255,.12);border-color:transparent;color:#fff;" aria-label="Share"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>
+                <button class="icon-btn" style="border-radius:50%;background:var(--red-600);border-color:transparent;color:#fff;" aria-label="End call" onclick="goto('telemedicine')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="22" y1="2" x2="2" y2="22"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <div class="card-head"><h3>Patient</h3></div>
+              <div class="card-body" style="padding-top:6px;padding-bottom:6px;">
+                <div class="kv"><span class="k">Name</span><span class="v">Rajesh Sharma</span></div>
+                <div class="kv"><span class="k">Age / Sex</span><span class="v">54 · Male</span></div>
+                <div class="kv"><span class="k">MRN</span><span class="v">ZH-PT-20455</span></div>
+                <div class="kv"><span class="k">Reason</span><span class="v">HTN follow-up</span></div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:16px;">
+              <div class="card-head"><h3>Live notes</h3></div>
+              <div class="card-body">
+                <textarea class="input" rows="6" placeholder="Type consultation notes…"></textarea>
+              </div>
+            </div>
+
+            <div class="card pad" style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
+              <button class="btn btn-outline block" onclick="goto('prescribe')">Prescribe</button>
+              <button class="btn btn-primary block" onclick="goto('telemedicine')">End &amp; save note</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  function goto(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.screen === id));
+    var nav = document.querySelector('.nav-item[data-screen="'+id+'"]');
+    var title = nav ? nav.dataset.title : 'Dashboard';
+    var crumb = nav ? nav.dataset.crumb : '';
+    var el = document.getElementById('pageTitle');
+    el.textContent = '';
+    if (crumb) {
+      var c = document.createElement('span');
+      c.className = 'crumb';
+      c.textContent = crumb;
+      el.appendChild(c);
+    }
+    el.appendChild(document.createTextNode(title));
+    document.querySelector('.content').scrollTop = 0;
+  }
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => goto(item.dataset.screen));
+  });
+  function ptab(el,id){const wrap=el.closest('.screen');wrap.querySelectorAll('.ptab-panel').forEach(p=>p.classList.remove('active'));wrap.querySelectorAll('.tabbar .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');wrap.querySelector('#'+id).classList.add('active');}
+</script>
+</body>
+</html>

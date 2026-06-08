@@ -1,0 +1,7 @@
+[2026-06-07T17:13:05.443Z] GET http://127.0.0.1:8973/design/individual-report.html → 200 (2ms, 74621B)
+[2026-06-07T17:13:05.447Z] GET https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap → 200 (293ms, 1591B)
+[2026-06-07T17:13:05.447Z] GET http://127.0.0.1:8973/design/assets/brand-1-d898a4cf.jpg → 200 (2ms, 105211B)
+[2026-06-07T17:13:05.447Z] GET http://127.0.0.1:8973/design/assets/brand-2-dfc0a7e3.jpg → 200 (3ms, 97013B)
+[2026-06-07T17:13:05.771Z] GET https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2 → pending (?ms, ?B)
+[2026-06-07T17:13:05.771Z] GET https://fonts.gstatic.com/s/sora/v17/xMQ9uFFYT72X5wkB_18qmnndmSdSnh2BAfO5mnuyOo1lfiQwV6-xo6eeIw.woff2 → pending (?ms, ?B)
+[2026-06-07T17:13:05.771Z] GET https://fonts.gstatic.com/s/plusjakartasans/v12/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20yygg_vb.woff2 → pending (?ms, ?B)

@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZiffyHealth — Anatomical Body Map (v2, real anatomy)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../design-system/tokens.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    color: var(--text);
+    background: var(--bg-subtle);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: 40px 24px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ============ Hero card (deep-green surface) ============ */
+  .bodymap-card {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(113,217,128,.10), transparent 55%),
+      linear-gradient(168deg, var(--hero-from) 0%, var(--hero-via) 46%, var(--hero-to) 100%);
+    border: 1px solid rgba(144,217,128,.16);
+    border-radius: 28px;
+    box-shadow: 0 1px 2px rgba(2,21,0,.5), 0 30px 70px -34px rgba(2,21,0,.85);
+    padding: 34px 38px 28px;
+    max-width: 960px;          /* wider card so the figure can be the focal point */
+    width: 100%;
+    color: #EAF6E6;
+  }
+  .bodymap-card::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(140% 120% at 50% 120%, rgba(0,0,0,.35), transparent 60%);
+    pointer-events: none;
+  }
+
+  .bodymap-head { position: relative; margin-bottom: 6px; }
+  .bodymap-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--primary-bright);
+    font-weight: 500;
+    margin: 0 0 7px;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .bodymap-eyebrow::before {
+    content:""; width: 18px; height: 1px;
+    background: linear-gradient(90deg, var(--primary-bright), transparent);
+  }
+  .bodymap-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    line-height: 1.12;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin: 0 0 5px;
+    letter-spacing: -.012em;
+  }
+  .bodymap-sub {
+    font-size: 13.5px;
+    color: rgba(228,255,222,.72);
+    margin: 0;
+    max-width: 56ch;
+    line-height: 1.5;
+  }
+
+  /* ============ Layout: BIG figure + supporting side rail ============ */
+  .bodymap-body {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr minmax(210px, 248px);  /* figure dominates */
+    gap: 26px;
+    align-items: stretch;
+    margin-top: 18px;
+  }
+  @media (max-width: 720px) {
+    .bodymap-body { grid-template-columns: 1fr; gap: 18px; }
+  }
+
+  /* ---- Stage (the figure) — the clear focal point ---- */
+  .bodymap-stage {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 4px 0 2px;
+    isolation: isolate;
+  }
+  .stage-aura {
+    position: absolute;
+    left: 50%; top: 46%;
+    width: 84%; height: 92%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(50% 50% at 50% 50%, rgba(228,255,222,.18), rgba(228,255,222,.05) 55%, transparent 72%);
+    filter: blur(2px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Fixed-aspect wrapper. Native art viewBox = 1363 x 1212; the <img> and the
+     overlay BOTH use that exact viewBox with the SAME preserveAspectRatio and
+     NO transforms — so a hotspot at (cx,cy) lands on the matching pixel of the
+     art. Made large so the diagram is the section's focal point. */
+  .figure {
+    position: relative;
+    width: 100%;
+    max-width: 560px;          /* much larger than before (was 420) */
+    margin: 0 auto;
+    aspect-ratio: 1363 / 1212;
+    z-index: 1;
+  }
+  .anatomy-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: fill;          /* box aspect == viewBox aspect, so fill == contain, no letterbox */
+    filter:
+      drop-shadow(0 12px 34px rgba(0,0,0,.55))
+      saturate(1.16) brightness(1.16) contrast(1.07);
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+  .overlay {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    overflow: visible;
+  }
+
+  /* ============ Hotspots (zone-colored rings + status dot) ============ */
+  .hotspot { cursor: pointer; outline: none; }
+  .hotspot[data-zone="normal"]      { color: var(--zone-normal); }
+  .hotspot[data-zone="borderline"]  { color: var(--zone-borderline); }
+  .hotspot[data-zone="alert"]       { color: var(--zone-alert); }
+  .hotspot[data-zone="critical"]    { color: var(--zone-critical); }
+
+  .hs-ring {
+    fill: color-mix(in srgb, currentColor 14%, transparent);
+    stroke: currentColor;
+    stroke-width: 3.4;
+    opacity: .85;
+    transition: opacity .2s ease, stroke-width .2s ease, filter .2s ease;
+    filter: drop-shadow(0 0 5px color-mix(in srgb, currentColor 60%, transparent));
+  }
+  .hotspot:hover .hs-ring,
+  .hotspot:focus-visible .hs-ring,
+  .hotspot.is-active .hs-ring {
+    opacity: 1;
+    stroke-width: 5;
+    fill: color-mix(in srgb, currentColor 24%, transparent);
+    filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 3px currentColor);
+  }
+  /* keyboard focus ring around the whole hotspot for a11y */
+  .hotspot:focus-visible .hs-focus { opacity: 1; }
+  .hs-focus {
+    fill: none;
+    stroke: #EAF6E6;
+    stroke-width: 2;
+    stroke-dasharray: 4 4;
+    opacity: 0;
+    transition: opacity .15s ease;
+  }
+
+  /* expanding "sonar" ring on the active organ */
+  .hs-pulse {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.6;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .hotspot.is-active .hs-pulse,
+  .hotspot:hover .hs-pulse,
+  .hotspot:focus-visible .hs-pulse {
+    animation: ringPulse 2.5s ease-out infinite;
+  }
+  @keyframes ringPulse {
+    0%   { transform: scale(.72); opacity: .6; }
+    70%  { transform: scale(1.5); opacity: 0; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  /* status dot = white keyline + solid dot + pulsing ring */
+  .status-dot { fill: currentColor; }
+  .status-dot-key { fill: none; stroke: #fff; stroke-width: 1.6; }
+  .status-dot-ring {
+    fill: none; stroke: currentColor; stroke-width: 1.8;
+    transform-box: fill-box; transform-origin: center;
+    animation: dotPulse 2.4s ease-out infinite;
+  }
+  @keyframes dotPulse {
+    0%   { transform: scale(.8); opacity: .7; }
+    70%  { transform: scale(2.6); opacity: 0; }
+    100% { transform: scale(2.6); opacity: 0; }
+  }
+  /* leader line + label for the systemic marker (blood) */
+  .hs-leader { stroke: currentColor; stroke-width: 1.6; opacity: .7; }
+  .hs-tag {
+    font-family: var(--font-mono); font-size: 19px; font-weight: 500;
+    fill: #EAF6E6; letter-spacing: .02em;
+  }
+  .hs-tag-bg { fill: rgba(2,21,0,.55); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot-ring, .hs-pulse { animation: none !important; opacity: .35; }
+  }
+
+  /* ============ Hover tooltip (quick peek) ============ */
+  .tip {
+    position: absolute;
+    z-index: 30;
+    min-width: 196px;
+    max-width: 256px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 14px 40px -12px rgba(2,21,0,.55), 0 3px 8px rgba(2,21,0,.25);
+    padding: 12px 13px 13px;
+    opacity: 0;
+    transform: translateY(4px);
+    pointer-events: none;
+    transition: opacity .16s ease, transform .16s ease;
+    color: var(--text);
+  }
+  .tip.is-open { opacity: 1; transform: translateY(0); }
+  .tip::after {
+    content: "";
+    position: absolute;
+    left: var(--arrow-x, 50%);
+    bottom: -7px;
+    width: 12px; height: 12px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .tip.flip-below::after {
+    bottom: auto; top: -7px;
+    border: 0;
+    border-left: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+  }
+  .tip-head { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+  .tip-title {
+    font-family: var(--font-display);
+    font-weight: 600; font-size: 14.5px;
+    color: var(--text-strong); margin: 0; flex: 1;
+    letter-spacing: -.005em;
+  }
+  .tip-sub {
+    font-size: 11px; color: var(--text-muted); margin: 0 0 9px;
+    font-family: var(--font-mono); letter-spacing: .03em; text-transform: uppercase;
+  }
+  .tip-more {
+    margin: 10px 0 0; padding-top: 9px;
+    border-top: 1px dashed var(--border);
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--primary);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tip-more svg { width: 11px; height: 11px; flex: none; }
+
+  .pill {
+    display: inline-flex; align-items: center;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+    letter-spacing: .04em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+  }
+  .pill[data-zone="normal"]     { background: var(--zone-normal-bg);     color: var(--zone-normal-text); }
+  .pill[data-zone="borderline"] { background: var(--zone-borderline-bg); color: var(--zone-borderline-text); }
+  .pill[data-zone="alert"]      { background: var(--zone-alert-bg);      color: var(--zone-alert-text); }
+  .pill[data-zone="critical"]   { background: var(--zone-critical-bg);   color: var(--zone-critical-text); }
+
+  .tip-bio { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .tip-bio li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .bio-name { font-size: 12px; color: var(--text); display: inline-flex; align-items: baseline; }
+  .bio-val {
+    font-family: var(--font-mono); font-size: 11.5px; font-weight: 500;
+    color: var(--text-strong); white-space: nowrap;
+  }
+  .bio-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    display: inline-block; margin-right: 6px; flex: none;
+    position: relative; top: 1px;
+  }
+  .bio-dot[data-zone="normal"]     { background: var(--zone-normal-solid); }
+  .bio-dot[data-zone="borderline"] { background: var(--zone-borderline-solid); }
+  .bio-dot[data-zone="alert"]      { background: var(--zone-alert-solid); }
+  .bio-dot[data-zone="critical"]   { background: var(--zone-critical-solid); }
+
+  /* ============ Side rail: the 7 report systems ============ */
+  .rail {
+    display: flex; flex-direction: column;
+    gap: 5px;
+    align-self: center;
+    padding: 4px 0;
+  }
+  .rail-title {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: rgba(228,255,222,.5);
+    margin: 0 0 8px 10px;
+  }
+  .rail-item {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%;
+    padding: 9px 11px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(234,246,230,.86);
+    font: inherit; font-size: 13px;
+    text-align: left; cursor: pointer;
+    transition: background .16s ease, border-color .16s ease, transform .12s ease;
+  }
+  .rail-item:hover, .rail-item.is-active {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(144,217,128,.22);
+    transform: translateX(1px);
+  }
+  .rail-item:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(144,217,128,.55); background: rgba(255,255,255,.06); }
+  .rail-swatch {
+    width: 9px; height: 9px; border-radius: 50%; flex: none;
+    box-shadow: 0 0 0 3px rgba(255,255,255,.07);
+  }
+  .rail-item[data-zone="normal"]     .rail-swatch { background: var(--zone-normal); }
+  .rail-item[data-zone="borderline"] .rail-swatch { background: var(--zone-borderline); }
+  .rail-item[data-zone="alert"]      .rail-swatch { background: var(--zone-alert); }
+  .rail-item[data-zone="critical"]   .rail-swatch { background: var(--zone-critical); }
+  .rail-text { flex: 1; display: flex; flex-direction: column; gap: 1px; line-height: 1.2; min-width: 0; }
+  .rail-name { font-weight: 600; }
+  .rail-organ { font-size: 10.5px; color: rgba(228,255,222,.5); font-weight: 400; }
+  .rail-zone {
+    font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .05em;
+    text-transform: uppercase; opacity: .62; align-self: flex-start; margin-top: 2px;
+  }
+
+  /* ============ Legend (zone key) ============ */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 14px 22px;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid rgba(144,217,128,.14);
+    justify-content: center;
+    position: relative;
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(234,246,230,.82); }
+  .legend-swatch { width: 11px; height: 11px; border-radius: 50%; flex: none; box-shadow: 0 0 0 3px rgba(255,255,255,.06); }
+  .legend-item[data-zone="normal"]     .legend-swatch { background: var(--zone-normal); }
+  .legend-item[data-zone="borderline"] .legend-swatch { background: var(--zone-borderline); }
+  .legend-item[data-zone="alert"]      .legend-swatch { background: var(--zone-alert); }
+  .legend-item[data-zone="critical"]   .legend-swatch { background: var(--zone-critical); }
+  .legend-item b { font-weight: 600; color: #FFFFFF; }
+
+  .credit {
+    position: relative;
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 9.5px; letter-spacing: .02em;
+    color: rgba(228,255,222,.4);
+    text-align: center;
+    line-height: 1.5;
+  }
+  .credit a { color: rgba(228,255,222,.55); text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ============ Expanded detail card (click) ============ */
+  .detail-scrim {
+    position: absolute; inset: 0;
+    background: rgba(2,21,0,.55);
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 40;
+    border-radius: 28px;
+  }
+  .detail-scrim.is-open { opacity: 1; pointer-events: auto; }
+
+  .detail {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -48%) scale(.97);
+    width: min(440px, calc(100% - 48px));
+    max-height: calc(100% - 48px);
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 28px 70px -20px rgba(2,21,0,.7);
+    padding: 22px 24px 24px;
+    color: var(--text);
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 41;
+  }
+  .detail.is-open { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+
+  .detail-top {
+    display: flex; align-items: flex-start; gap: 12px;
+    border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px;
+  }
+  .detail-icon {
+    width: 42px; height: 42px; border-radius: 12px; flex: none;
+    display: grid; place-items: center;
+    color: #fff;
+  }
+  .detail-icon[data-zone="normal"]     { background: var(--zone-normal); }
+  .detail-icon[data-zone="borderline"] { background: var(--zone-borderline); }
+  .detail-icon[data-zone="alert"]      { background: var(--zone-alert); }
+  .detail-icon[data-zone="critical"]   { background: var(--zone-critical); }
+  .detail-icon svg { width: 23px; height: 23px; }
+  .detail-titles { flex: 1; min-width: 0; }
+  .detail-name {
+    font-family: var(--font-display); font-weight: 600; font-size: 19px;
+    color: var(--text-strong); margin: 0 0 3px; letter-spacing: -.01em;
+  }
+  .detail-organ { font-size: 12px; color: var(--text-muted); margin: 0; }
+  .detail-zone { margin-top: 4px; }
+  .detail-close {
+    flex: none; width: 30px; height: 30px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-muted);
+    color: var(--text-muted); cursor: pointer; font-size: 15px; line-height: 1;
+    display: grid; place-items: center;
+    transition: background .15s ease, color .15s ease;
+  }
+  .detail-close:hover, .detail-close:focus-visible {
+    background: var(--surface-sunken); color: var(--text-strong); outline: none;
+  }
+
+  .detail-bio { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .detail-bio li { display: flex; align-items: center; gap: 12px; padding: 11px 2px; }
+  .detail-bio li + li { border-top: 1px solid var(--surface-sunken); }
+  .db-dot {
+    width: 9px; height: 9px; border-radius: 50%; flex: none;
+    box-shadow: 0 0 0 3px var(--surface-sunken);
+  }
+  .db-dot[data-zone="normal"]     { background: var(--zone-normal-solid); }
+  .db-dot[data-zone="borderline"] { background: var(--zone-borderline-solid); }
+  .db-dot[data-zone="alert"]      { background: var(--zone-alert-solid); }
+  .db-dot[data-zone="critical"]   { background: var(--zone-critical-solid); }
+  .db-name { flex: 1; font-size: 13.5px; color: var(--text-strong); font-weight: 500; }
+  .db-val {
+    font-family: var(--font-mono); font-size: 13px; color: var(--text);
+    white-space: nowrap; font-weight: 500;
+  }
+  .db-unit { color: var(--text-muted); font-size: 11px; margin-left: 2px; }
+  .db-zone {
+    font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+    letter-spacing: .05em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px; white-space: nowrap; flex: none;
+    min-width: 64px; text-align: center;
+  }
+  .db-zone[data-zone="normal"]     { background: var(--zone-normal-bg);     color: var(--zone-normal-text); }
+  .db-zone[data-zone="borderline"] { background: var(--zone-borderline-bg); color: var(--zone-borderline-text); }
+  .db-zone[data-zone="alert"]      { background: var(--zone-alert-bg);      color: var(--zone-alert-text); }
+  .db-zone[data-zone="critical"]   { background: var(--zone-critical-bg);   color: var(--zone-critical-text); }
+</style>
+</head>
+<body>
+  <main class="bodymap-card" id="card">
+    <header class="bodymap-head">
+      <p class="bodymap-eyebrow">Whole-body overview</p>
+      <h1 class="bodymap-title">Anatomical Body Map</h1>
+      <p class="bodymap-sub">A real anatomical rendering of the organ systems behind your report. Each region is flagged by its current health zone — hover for a quick read, or click an organ to see every biomarker behind it.</p>
+    </header>
+
+    <div class="bodymap-body">
+      <!-- ===================== FIGURE + OVERLAY ===================== -->
+      <div class="bodymap-stage" id="stage">
+        <div class="stage-aura" aria-hidden="true"></div>
+        <div class="figure" id="figure">
+          <!-- Real public-domain anatomical art (Mariana Ruiz / LadyofHats, Wikimedia, PD).
+               Native viewBox 1363 x 1212 → only the upper body (head→pelvis) is shown. -->
+          <img class="anatomy-img" id="anatomy"
+               src="assets/anatomy/organs-clean.svg"
+               alt="Translucent human upper body showing realistically-colored internal organs and the circulatory system: brain, thyroid, heart, lungs, liver, stomach, pancreas, kidneys and bladder, with arteries and veins." />
+          <!-- Interactive hotspot overlay — shares the source art's viewBox exactly, no transforms -->
+          <svg class="overlay" id="overlay" viewBox="0 0 1363 1212"
+               preserveAspectRatio="xMidYMid meet" role="group"
+               aria-label="Interactive health-zone markers over each organ system">
+            <g id="hotspots"></g>
+          </svg>
+        </div>
+        <!-- hover tooltip + expanded detail injected by JS -->
+        <div class="tip" id="tip" role="tooltip"></div>
+        <div class="detail-scrim" id="scrim"></div>
+        <div class="detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="detail-name" tabindex="-1"></div>
+      </div>
+
+      <!-- ===================== SIDE RAIL (the 7 systems) ===================== -->
+      <nav class="rail" id="rail" aria-label="Report systems">
+        <p class="rail-title">Report systems</p>
+      </nav>
+    </div>
+
+    <!-- ===== LEGEND ===== -->
+    <div class="legend" aria-label="Health zone legend">
+      <span class="legend-item" data-zone="normal"><span class="legend-swatch"></span><b>Normal</b></span>
+      <span class="legend-item" data-zone="borderline"><span class="legend-swatch"></span><b>Borderline</b></span>
+      <span class="legend-item" data-zone="alert"><span class="legend-swatch"></span><b>Alert</b></span>
+      <span class="legend-item" data-zone="critical"><span class="legend-swatch"></span><b>Critical</b></span>
+    </div>
+
+    <p class="credit">
+      Anatomical illustration: “Human anatomy” by Mariana Ruiz Villarreal (LadyofHats) ·
+      Wikimedia Commons · Public Domain
+    </p>
+  </main>
+
+<script>
+/* ============================================================
+   ZiffyHealth Body Map v2 — real PD anatomy + interactive overlay.
+
+   The anatomy <img> is the public-domain "Human anatomy" SVG. Its declared
+   viewBox is 1363 x 1212, which shows the UPPER BODY (head -> pelvis). The
+   overlay SVG uses the IDENTICAL viewBox with the same preserveAspectRatio
+   and NO transforms, so every hotspot (cx,cy) below sits on the matching
+   pixel of the art. Coordinates were read off a calibration grid + crosshair
+   probes rendered over the art (verified: content->screen is linear with
+   origin 0,0 and uniform scale).
+
+   Only the 7 systems that have a matching report parameter are shown.
+   Anatomical LEFT = viewer's RIGHT.
+   ============================================================ */
+const ORGANS = [
+  {
+    id: "thyroid", system: "Thyroid", organ: "Neck · throat", zone: "normal",
+    icon: "thyroid",
+    shape: { type: "ellipse", cx: 645, cy: 440, rx: 38, ry: 30 },
+    dot: [682, 420],
+    bio: [
+      ["TSH", "2.84", "µIU/mL", "normal"],
+      ["T3", "1.12", "ng/mL", "normal"],
+      ["T4", "7.80", "µg/dL", "normal"]
+    ]
+  },
+  {
+    id: "heart", system: "Heart", organ: "Cardiovascular · chest", zone: "alert",
+    icon: "heart",
+    shape: { type: "ellipse", cx: 652, cy: 678, rx: 56, ry: 70 },
+    dot: [704, 632],
+    bio: [
+      ["Total Cholesterol", "232", "mg/dL", "alert"],
+      ["LDL", "148", "mg/dL", "alert"],
+      ["HDL", "47", "mg/dL", "normal"],
+      ["Triglycerides", "186", "mg/dL", "borderline"],
+      ["Chol / HDL ratio", "6.1", "", "alert"]
+    ]
+  },
+  {
+    id: "liver", system: "Liver", organ: "Hepatic · upper abdomen (R)", zone: "normal",
+    icon: "liver",
+    shape: { type: "ellipse", cx: 576, cy: 824, rx: 58, ry: 50 },
+    dot: [524, 808],
+    bio: [
+      ["ALT", "28", "U/L", "normal"],
+      ["AST", "28", "U/L", "normal"],
+      ["Alkaline Phosphatase", "88", "U/L", "normal"],
+      ["Bilirubin", "0.96", "mg/dL", "normal"],
+      ["Albumin", "4.15", "g/dL", "normal"]
+    ]
+  },
+  {
+    id: "pancreas", system: "Pancreas", organ: "Metabolic · upper abdomen", zone: "borderline",
+    icon: "pancreas",
+    shape: { type: "ellipse", cx: 648, cy: 850, rx: 70, ry: 28 },
+    dot: [718, 846],
+    bio: [
+      ["HbA1c", "5.9", "%", "borderline"],
+      ["Fasting Glucose", "108", "mg/dL", "borderline"],
+      ["Est. Avg Glucose", "123", "mg/dL", "borderline"],
+      ["Fasting Insulin", "8.4", "µIU/mL", "normal"]
+    ]
+  },
+  {
+    id: "kidneys", system: "Kidneys", organ: "Renal · paired, mid-abdomen", zone: "normal",
+    icon: "kidneys",
+    shape: { type: "ellipse", cx: 645, cy: 900, rx: 96, ry: 34 },
+    dot: [741, 900],
+    bio: [
+      ["Creatinine", "0.94", "mg/dL", "normal"],
+      ["Urea", "26", "mg/dL", "normal"],
+      ["Uric Acid", "5.4", "mg/dL", "normal"],
+      ["eGFR", "92", "mL/min", "normal"]
+    ]
+  },
+  {
+    id: "bone", system: "Bone — Calcium & Vit D", organ: "Skeletal · pelvis / hip", zone: "borderline",
+    icon: "bone",
+    shape: { type: "ellipse", cx: 648, cy: 1080, rx: 80, ry: 46 },
+    dot: [728, 1066],
+    bio: [
+      ["Vitamin D", "22", "ng/mL", "borderline"],
+      ["Calcium", "9.6", "mg/dL", "normal"]
+    ]
+  },
+  {
+    id: "blood", system: "Blood / CBC", organ: "Haematology · major vessel", zone: "normal",
+    icon: "blood", marker: true,
+    shape: { type: "ellipse", cx: 815, cy: 770, rx: 26, ry: 66 },
+    dot: [841, 770],
+    leader: [868, 770, 938, 770],   // x1,y1 -> x2,y2 leader to a tag
+    tag: { x: 944, y: 776, text: "CBC" },
+    bio: [
+      ["Haemoglobin", "14.6", "g/dL", "normal"],
+      ["RBC", "5.12", "M/µL", "normal"],
+      ["WBC", "7,400", "/µL", "normal"],
+      ["Platelets", "248", "K/µL", "normal"],
+      ["Vitamin B12", "412", "pg/mL", "normal"],
+      ["Iron", "94", "µg/dL", "normal"],
+      ["Ferritin", "138", "ng/mL", "normal"]
+    ]
+  }
+];
+
+/* ---- tiny inline glyphs for the detail header (as SVG path 'd' strings) ---- */
+const ICON_PATHS = {
+  heart:    ["M19 14c1.5-1.5 3-3.3 3-5.5A4.5 4.5 0 0 0 12 5 4.5 4.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7Z"],
+  thyroid:  ["M8 5c0 3-2 4-2 7a3 3 0 0 0 6 0 3 3 0 0 0 6 0c0-3-2-4-2-7", "M12 11v5"],
+  liver:    ["M3 8c5-3 13-3 18 0 0 5-2 8-7 8-2 0-3-2-5-2s-6 1-6-6Z"],
+  pancreas: ["M3 9a5 5 0 0 1 5-5c4 0 6 3 10 4 2 .5 3 2 3 4s-2 3-4 2c-5-2-7-4-10-4a5 5 0 0 0-4 4Z"],
+  kidneys:  ["M8 4c2.5 0 3.5 2 3.5 5S10.5 19 8 19s-4-3-4-7.5S5.5 4 8 4Z", "M16 4c2.5 0 4 3 4 7.5S18.5 19 16 19s-3.5-3-3.5-7.5S13.5 4 16 4Z"],
+  bone:     ["M8 16 16 8", "M7 4a2.5 2.5 0 0 0-2 4 2.5 2.5 0 0 0 0 .5A2.5 2.5 0 1 0 8.5 11", "M16 20a2.5 2.5 0 0 0 2-4 2.5 2.5 0 0 0 0-.5A2.5 2.5 0 1 0 15.5 13"],
+  blood:    ["M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11Z"]
+};
+const SVGNS = "http://www.w3.org/2000/svg";
+
+/* build a stroked 24x24 icon from path 'd' strings (no innerHTML) */
+function iconSvg(name) {
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "2");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
+  (ICON_PATHS[name] || ICON_PATHS.blood).forEach(d => {
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("d", d);
+    svg.appendChild(p);
+  });
+  return svg;
+}
+
+const hotspots = document.getElementById("hotspots");
+const ZONE_LABEL = { normal: "Normal", borderline: "Borderline", alert: "Alert", critical: "Critical" };
+
+function svgEl(tag, attrs = {}) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  return n;
+}
+
+function statusDot(cx, cy) {
+  const g = svgEl("g");
+  g.appendChild(svgEl("circle", { class: "status-dot-ring", cx, cy, r: 7 }));
+  g.appendChild(svgEl("circle", { class: "status-dot-key", cx, cy, r: 6.4 }));
+  g.appendChild(svgEl("circle", { class: "status-dot", cx, cy, r: 5 }));
+  return g;
+}
+
+function ringShape(shape, cls) {
+  if (shape.type === "ellipse") {
+    return svgEl("ellipse", { class: cls, cx: shape.cx, cy: shape.cy, rx: shape.rx, ry: shape.ry });
+  }
+  return svgEl("circle", { class: cls, cx: shape.cx, cy: shape.cy, r: shape.r || 40 });
+}
+
+function buildHotspot(o) {
+  const g = svgEl("g", { class: "hotspot", tabindex: "0", role: "button" });
+  g.dataset.id = o.id;
+  g.dataset.zone = o.zone;
+  g.setAttribute("aria-label", o.system + " — zone " + ZONE_LABEL[o.zone] + ". Activate to see biomarkers.");
+  if (o.leader) {
+    const [x1, y1, x2, y2] = o.leader;
+    g.appendChild(svgEl("line", { class: "hs-leader", x1, y1, x2, y2 }));
+  }
+  if (o.tag) {
+    const tw = o.tag.text.length * 12 + 12;
+    g.appendChild(svgEl("rect", { class: "hs-tag-bg", x: o.tag.x - 6, y: o.tag.y - 16, width: tw, height: 22, rx: 5 }));
+    const t = svgEl("text", { class: "hs-tag", x: o.tag.x, y: o.tag.y });
+    t.textContent = o.tag.text;
+    g.appendChild(t);
+  }
+  g.appendChild(ringShape(o.shape, "hs-pulse"));
+  g.appendChild(ringShape(o.shape, "hs-ring"));
+  const f = ringShape(o.shape, "hs-focus");   // a11y focus ring slightly larger
+  f.setAttribute("rx", (o.shape.rx || 40) + 8);
+  f.setAttribute("ry", (o.shape.ry || 40) + 8);
+  g.appendChild(f);
+  g.appendChild(statusDot(o.dot[0], o.dot[1]));
+  return g;
+}
+
+/* draw order: marker first (under), organs next, heart (the standout) last on top */
+const DRAW_ORDER = ["blood", "bone", "thyroid", "liver", "kidneys", "pancreas", "heart"];
+const byId = Object.fromEntries(ORGANS.map(o => [o.id, o]));
+DRAW_ORDER.forEach(id => { if (byId[id]) hotspots.appendChild(buildHotspot(byId[id])); });
+
+/* ============================================================
+   Side rail (the 7 systems, top->bottom anatomical order)
+   ============================================================ */
+const rail = document.getElementById("rail");
+const RAIL_ORDER = ["thyroid", "heart", "liver", "pancreas", "kidneys", "bone", "blood"];
+RAIL_ORDER.forEach(id => {
+  const o = byId[id]; if (!o) return;
+  const b = document.createElement("button");
+  b.className = "rail-item";
+  b.type = "button";
+  b.dataset.id = o.id;
+  b.dataset.zone = o.zone;
+  b.setAttribute("aria-label", o.system + " — zone " + ZONE_LABEL[o.zone]);
+  const sw = document.createElement("span"); sw.className = "rail-swatch"; b.appendChild(sw);
+  const tx = document.createElement("span"); tx.className = "rail-text";
+  const nm = document.createElement("span"); nm.className = "rail-name"; nm.textContent = o.system; tx.appendChild(nm);
+  const og = document.createElement("span"); og.className = "rail-organ"; og.textContent = o.organ; tx.appendChild(og);
+  b.appendChild(tx);
+  const zn = document.createElement("span"); zn.className = "rail-zone"; zn.textContent = ZONE_LABEL[o.zone]; b.appendChild(zn);
+  rail.appendChild(b);
+});
+
+/* ============================================================
+   Hover tooltip (quick peek — first ~3 biomarkers)
+   ============================================================ */
+const tip = document.getElementById("tip");
+const stage = document.getElementById("stage");
+const overlay = document.getElementById("overlay");
+
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function renderTip(o) {
+  tip.replaceChildren();
+  const head = el("div", "tip-head");
+  head.appendChild(el("p", "tip-title", o.system));
+  const pill = el("span", "pill", ZONE_LABEL[o.zone]);
+  pill.dataset.zone = o.zone;
+  head.appendChild(pill);
+  tip.appendChild(head);
+  tip.appendChild(el("div", "tip-sub", o.organ));
+
+  const ul = el("ul", "tip-bio");
+  o.bio.slice(0, 3).forEach(([name, val, unit, z]) => {
+    const li = document.createElement("li");
+    const nameSpan = el("span", "bio-name");
+    const dot = el("span", "bio-dot");
+    dot.dataset.zone = z;
+    nameSpan.appendChild(dot);
+    nameSpan.appendChild(document.createTextNode(name));
+    li.appendChild(nameSpan);
+    li.appendChild(el("span", "bio-val", (val + (unit ? " " + unit : "")).trim()));
+    ul.appendChild(li);
+  });
+  tip.appendChild(ul);
+
+  if (o.bio.length > 3) {
+    const more = el("div", "tip-more");
+    const chev = document.createElementNS(SVGNS, "svg");
+    chev.setAttribute("viewBox", "0 0 24 24");
+    chev.setAttribute("fill", "none");
+    chev.setAttribute("stroke", "currentColor");
+    chev.setAttribute("stroke-width", "2.4");
+    chev.setAttribute("stroke-linecap", "round");
+    chev.setAttribute("stroke-linejoin", "round");
+    const cp = document.createElementNS(SVGNS, "path");
+    cp.setAttribute("d", "M9 6l6 6-6 6");
+    chev.appendChild(cp);
+    more.appendChild(chev);
+    more.appendChild(document.createTextNode("Click for all " + o.bio.length + " markers"));
+    tip.appendChild(more);
+  }
+}
+
+function positionTip(o) {
+  const pt = overlay.createSVGPoint();
+  pt.x = o.dot[0]; pt.y = o.dot[1];
+  const sp = pt.matrixTransform(overlay.getScreenCTM());
+  const stageRect = stage.getBoundingClientRect();
+  const px = sp.x - stageRect.left;
+  const py = sp.y - stageRect.top;
+
+  tip.classList.add("is-open");
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  const pad = 6;
+  let left = px - tw / 2;
+  let top = py - th - 16;
+  let flip = false;
+  left = Math.max(pad, Math.min(left, stageRect.width - tw - pad));
+  if (top < pad) { top = py + 18; flip = true; }
+  tip.classList.toggle("flip-below", flip);
+  tip.style.left = left + "px";
+  tip.style.top = top + "px";
+  const arrow = Math.max(14, Math.min(tw - 14, px - left));
+  tip.style.setProperty("--arrow-x", arrow + "px");
+}
+
+let hoverId = null;
+function showTip(id) {
+  if (detailOpen) return;                 // detail card takes precedence
+  const o = byId[id]; if (!o) return;
+  hoverId = id;
+  document.querySelectorAll('.hotspot[data-id="' + id + '"]').forEach(e => e.classList.add("is-active"));
+  document.querySelectorAll('.rail-item[data-id="' + id + '"]').forEach(e => e.classList.add("is-active"));
+  renderTip(o);
+  positionTip(o);
+}
+function hideTip() {
+  tip.classList.remove("is-open");
+  if (hoverId && !detailOpen) {
+    document.querySelectorAll('.is-active').forEach(e => e.classList.remove("is-active"));
+  }
+  hoverId = null;
+}
+
+/* ============================================================
+   Expanded detail card (click / Enter / Space) — ALL biomarkers
+   ============================================================ */
+const scrim = document.getElementById("scrim");
+const detail = document.getElementById("detail");
+let detailOpen = false;
+let lastFocus = null;
+
+function renderDetail(o) {
+  detail.replaceChildren();
+  const top = el("div", "detail-top");
+  const icon = el("div", "detail-icon");
+  icon.dataset.zone = o.zone;
+  icon.appendChild(iconSvg(o.icon));
+  top.appendChild(icon);
+
+  const titles = el("div", "detail-titles");
+  const name = el("h2", "detail-name", o.system); name.id = "detail-name";
+  titles.appendChild(name);
+  titles.appendChild(el("p", "detail-organ", o.organ));
+  const zwrap = el("div", "detail-zone");
+  const pill = el("span", "pill", ZONE_LABEL[o.zone]); pill.dataset.zone = o.zone;
+  zwrap.appendChild(pill);
+  titles.appendChild(zwrap);
+  top.appendChild(titles);
+
+  const close = el("button", "detail-close", "✕");
+  close.type = "button";
+  close.setAttribute("aria-label", "Close " + o.system + " details");
+  close.addEventListener("click", closeDetail);
+  top.appendChild(close);
+  detail.appendChild(top);
+
+  const ul = el("ul", "detail-bio");
+  o.bio.forEach(([nm, val, unit, z]) => {
+    const li = document.createElement("li");
+    const dot = el("span", "db-dot"); dot.dataset.zone = z; li.appendChild(dot);
+    li.appendChild(el("span", "db-name", nm));
+    const v = el("span", "db-val");
+    v.appendChild(document.createTextNode(val));
+    if (unit) v.appendChild(el("span", "db-unit", unit));
+    li.appendChild(v);
+    const zp = el("span", "db-zone", ZONE_LABEL[z]); zp.dataset.zone = z;
+    li.appendChild(zp);
+    ul.appendChild(li);
+  });
+  detail.appendChild(ul);
+}
+
+function openDetail(id) {
+  const o = byId[id]; if (!o) return;
+  hideTip();
+  detailOpen = true;
+  lastFocus = document.activeElement;
+  renderDetail(o);
+  document.querySelectorAll('.is-active').forEach(e => e.classList.remove("is-active"));
+  document.querySelectorAll('[data-id="' + id + '"]').forEach(e => e.classList.add("is-active"));
+  scrim.classList.add("is-open");
+  detail.classList.add("is-open");
+  detail.focus();
+}
+function closeDetail() {
+  detailOpen = false;
+  scrim.classList.remove("is-open");
+  detail.classList.remove("is-open");
+  document.querySelectorAll('.is-active').forEach(e => e.classList.remove("is-active"));
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+  lastFocus = null;
+}
+
+/* focus trap inside the detail dialog */
+detail.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { e.preventDefault(); closeDetail(); return; }
+  if (e.key !== "Tab") return;
+  const f = detail.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
+scrim.addEventListener("click", closeDetail);
+
+/* ============================================================
+   Wiring
+   ============================================================ */
+document.querySelectorAll(".hotspot").forEach(g => {
+  const id = g.dataset.id;
+  g.addEventListener("mouseenter", () => showTip(id));
+  g.addEventListener("mouseleave", () => hideTip());
+  g.addEventListener("focus", () => showTip(id));
+  g.addEventListener("blur", () => hideTip());
+  g.addEventListener("click", (e) => { e.stopPropagation(); openDetail(id); });
+  g.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetail(id); }
+  });
+});
+
+document.querySelectorAll(".rail-item").forEach(b => {
+  const id = b.dataset.id;
+  b.addEventListener("mouseenter", () => showTip(id));
+  b.addEventListener("mouseleave", () => hideTip());
+  b.addEventListener("focus", () => showTip(id));
+  b.addEventListener("blur", () => hideTip());
+  b.addEventListener("click", (e) => { e.stopPropagation(); openDetail(id); });
+});
+
+document.addEventListener("click", () => { if (!detailOpen) hideTip(); });
+window.addEventListener("resize", () => { if (hoverId && !detailOpen) positionTip(byId[hoverId]); });
+</script>
+</body>
+</html>
