@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Your report is ready — ZiffyHealth</title>
+<!--
+  ============================================================================
+  ZiffyHealth — "Point-of-Care report ready" patient notification email
+  ----------------------------------------------------------------------------
+  Sent when an ingested POC / LIS device report is processed and ready.
+  • The full report is delivered as an ATTACHED PDF == the PDF render of
+    design/individual-report.html (scoped to that one device run).
+  • This email carries NO clinical results — only non-PHI-sensitive metadata.
+  • Email-safe: tables + inline styles, 600px, image-blocking-proof.
+
+  TEMPLATE BINDINGS (sample values shown; swap for Jinja in the backend):
+    {{ patient.full_name }}      -> "Ananya Sharma"
+    {{ patient.mrn }}            -> "ZH-100482"
+    {{ clinic.name }}            -> "ZiffyHealth Diagnostics — Andheri West"
+    {{ report.panel_name }}      -> "Cardiac Panel"            (the "test name")
+    {{ report.device_label }}    -> "Boditech iChroma II"
+    {{ report.sample_type }}     -> "Whole blood"              (optional)
+    {{ report.reported_at }}     -> "08 Jun 2026, 4:32 PM IST"
+    {{ report.accession }}       -> "LIS-2026-0608-0421"       (optional)
+    {{ attachment.filename }}    -> "ZiffyHealth_Cardiac-Panel_ZH-100482_2026-06-08.pdf"
+    {{ portal_url }}             -> patient-portal deep link
+    {{ clinic.phone }}, {{ clinic.email }}, {{ support_email }}
+  Logo: hosted URL for preview; in production prefer a CID inline attachment
+  (<img src="cid:ziffyhealth-logo">) so it renders without remote-image loading.
+  ============================================================================
+-->
+<style>
+  /* Progressive enhancement only — base styling is inline. */
+  body{margin:0;padding:0;width:100%!important;background:#eef3e8;}
+  a{color:#1B6500;}
+  .zh-card{box-shadow:0 1px 2px rgba(12,40,8,.05),0 10px 30px rgba(12,40,8,.08);}
+  @media only screen and (max-width:620px){
+    .zh-container{width:100%!important;}
+    .zh-pad{padding-left:22px!important;padding-right:22px!important;}
+    .zh-h1{font-size:23px!important;}
+    .zh-stack{display:block!important;width:100%!important;}
+    .zh-btn a{display:block!important;}
+  }
+  @media (prefers-color-scheme:dark){ body{background:#0c160a;} }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#eef3e8;">
+  <!-- preheader (hidden preview text) -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#eef3e8;opacity:0;">
+    Your Cardiac Panel report from ZiffyHealth is ready — the full report is attached as a PDF.
+    &#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef3e8;">
+    <tr>
+      <td align="center" style="padding:28px 12px;">
+
+        <!-- 600px container -->
+        <table role="presentation" class="zh-container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;">
+
+          <!-- ===== Header (green) ===== -->
+          <tr>
+            <td bgcolor="#0d3f05" style="background:#0d3f05;background:linear-gradient(135deg,#021500,#0d3f05 60%,#13560a);border-radius:18px 18px 0 0;padding:24px 32px;" class="zh-pad">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="left" valign="middle" style="font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+                      <td valign="middle" style="padding-right:11px;">
+                        <span style="display:inline-block;background:#ffffff;border-radius:10px;padding:5px;line-height:0;">
+                          <img src="https://nilenduganguli.github.io/view.io/design/assets/brand-1-d898a4cf.jpg" width="34" height="34" alt="ZiffyHealth" style="display:block;width:34px;height:34px;border:0;border-radius:7px;">
+                        </span>
+                      </td>
+                      <td valign="middle">
+                        <span style="display:block;font-size:18px;font-weight:800;color:#ffffff;letter-spacing:.2px;line-height:1.1;">ZiffyHealth</span>
+                        <span style="display:block;font-size:11px;font-weight:500;color:#bfe6b2;letter-spacing:.4px;">Diagnostics</span>
+                      </td>
+                    </tr></table>
+                  </td>
+                  <td align="right" valign="middle" style="font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;font-weight:600;letter-spacing:1px;color:#9ad98a;text-transform:uppercase;">
+                    Report&nbsp;Ready
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ===== Body card ===== -->
+          <tr>
+            <td bgcolor="#ffffff" class="zh-card zh-pad" style="background:#ffffff;padding:34px 32px 14px;font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+
+              <div style="font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#277F08;margin:0 0 10px;">✓ Report ready</div>
+
+              <h1 class="zh-h1" style="margin:0 0 16px;font-size:26px;line-height:1.2;font-weight:800;color:#13230c;letter-spacing:-.4px;">
+                Your <span style="color:#1B6500;">Cardiac Panel</span> report is ready
+              </h1>
+
+              <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#3c4b33;">Hi <strong style="color:#13230c;">Ananya Sharma</strong>,</p>
+
+              <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#3c4b33;">
+                Your <strong style="color:#13230c;">Cardiac Panel</strong> sample, processed at <strong style="color:#13230c;">ZiffyHealth Diagnostics — Andheri West</strong>, has been completed. Your full report is <strong style="color:#1B6500;">attached to this email as a PDF</strong>.
+              </p>
+
+              <!-- ===== Details card (metadata only — NO results) ===== -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f8f1;border:1px solid #e2ebdc;border-radius:14px;border-collapse:separate;">
+                <tr><td style="padding:18px 20px 6px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+                    <tr>
+                      <td style="padding:7px 0;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#586850;width:42%;vertical-align:top;">Patient</td>
+                      <td style="padding:7px 0;font-size:14px;font-weight:600;color:#13230c;text-align:right;">Ananya Sharma</td>
+                    </tr>
+                    <tr><td colspan="2" style="border-top:1px solid #e6efe0;font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr>
+                      <td style="padding:7px 0;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#586850;vertical-align:top;">Patient ID</td>
+                      <td style="padding:7px 0;font-size:14px;font-weight:600;color:#13230c;text-align:right;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;">ZH-100482</td>
+                    </tr>
+                    <tr><td colspan="2" style="border-top:1px solid #e6efe0;font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr>
+                      <td style="padding:7px 0;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#586850;vertical-align:top;">Test</td>
+                      <td style="padding:7px 0;font-size:14px;font-weight:600;color:#13230c;text-align:right;">Cardiac Panel</td>
+                    </tr>
+                    <tr><td colspan="2" style="border-top:1px solid #e6efe0;font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr>
+                      <td style="padding:7px 0;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#586850;vertical-align:top;">Instrument</td>
+                      <td style="padding:7px 0;font-size:14px;font-weight:600;color:#13230c;text-align:right;">Boditech iChroma II</td>
+                    </tr>
+                    <tr><td colspan="2" style="border-top:1px solid #e6efe0;font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr>
+                      <td style="padding:7px 0;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#586850;vertical-align:top;">Clinic</td>
+                      <td style="padding:7px 0;font-size:14px;font-weight:600;color:#13230c;text-align:right;">ZiffyHealth Diagnostics — Andheri West</td>
+                    </tr>
+                    <tr><td colspan="2" style="border-top:1px solid #e6efe0;font-size:0;line-height:0;">&nbsp;</td></tr>
+                    <tr>
+                      <td style="padding:7px 0;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#586850;vertical-align:top;">Reported</td>
+                      <td style="padding:7px 0;font-size:14px;font-weight:600;color:#13230c;text-align:right;">08 Jun 2026, 4:32 PM</td>
+                    </tr>
+                  </table>
+                </td></tr>
+              </table>
+
+              <!-- ===== Attachment cue ===== -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;background:#eaf5e4;border:1px solid #cfe6c1;border-radius:12px;border-collapse:separate;">
+                <tr>
+                  <td width="44" valign="middle" style="padding:14px 0 14px 16px;">
+                    <span style="display:inline-block;width:30px;height:30px;background:#277F08;border-radius:8px;text-align:center;line-height:30px;font-size:15px;color:#ffffff;">&#128206;</span>
+                  </td>
+                  <td valign="middle" style="padding:12px 16px 12px 12px;font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+                    <span style="display:block;font-size:13.5px;font-weight:700;color:#13230c;word-break:break-all;">ZiffyHealth_Cardiac-Panel_ZH-100482_2026-06-08.pdf</span>
+                    <span style="display:block;font-size:12px;color:#5a6b50;margin-top:2px;">Attached &middot; PDF &middot; password-protected if enabled by your clinic</span>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- ===== CTA ===== -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="zh-btn"><tr><td align="center" style="padding:26px 0 8px;">
+                <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://nilenduganguli.github.io/view.io/apps/patient-app.html" style="height:48px;v-text-anchor:middle;width:280px;" arcsize="22%" strokecolor="#1B6500" fillcolor="#277F08"><w:anchorlock/><center style="color:#ffffff;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">Open in ZiffyHealth&nbsp;&rarr;</center></v:roundrect><![endif]-->
+                <!--[if !mso]><!-->
+                <a href="https://nilenduganguli.github.io/view.io/apps/patient-app.html" style="display:inline-block;background:#277F08;background:linear-gradient(135deg,#2c8c0a,#1B6500);color:#ffffff;font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:15px;font-weight:700;text-decoration:none;padding:14px 30px;border-radius:11px;box-shadow:0 6px 16px rgba(27,101,0,.28);">Open in ZiffyHealth&nbsp;&rarr;</a>
+                <!--<![endif]-->
+              </td></tr></table>
+
+              <p style="margin:6px 0 24px;font-size:12.5px;line-height:1.6;color:#5a6b50;text-align:center;">
+                You can also view this report any time in the ZiffyHealth app under <strong style="color:#3c4b33;">Reports</strong>.
+              </p>
+
+              <!-- ===== Confidentiality note ===== -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #ecf1e7;">
+                <tr><td style="padding:18px 2px 2px;font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+                  <p style="margin:0;font-size:12px;line-height:1.65;color:#586850;">
+                    <strong style="color:#3c4b33;">Confidential.</strong> This report contains personal health information intended only for <strong style="color:#3c4b33;">Ananya Sharma</strong>. Please review it with your doctor — lab results are not a diagnosis. If you weren&rsquo;t expecting this email or details look wrong, contact the clinic and do not open the attachment.
+                  </p>
+                </td></tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- ===== Footer ===== -->
+          <tr>
+            <td bgcolor="#f4f8f1" class="zh-pad" style="background:#f4f8f1;border-radius:0 0 18px 18px;padding:22px 32px 26px;font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;">
+              <p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#13230c;">ZiffyHealth Diagnostics — Andheri West</p>
+              <p style="margin:0 0 14px;font-size:12px;line-height:1.6;color:#586850;">
+                Need help? Call <a href="tel:+912240001234" style="color:#1B6500;text-decoration:none;font-weight:600;">+91&nbsp;22&nbsp;4000&nbsp;1234</a>
+                &nbsp;&middot;&nbsp; <a href="mailto:care@ziffyhealth.example" style="color:#1B6500;text-decoration:none;font-weight:600;">care@ziffyhealth.example</a>
+              </p>
+              <p style="margin:0;font-size:11px;line-height:1.6;color:#5f6d54;">
+                This is an automated message — please do not reply. &copy; ZiffyHealth, powered by CardioQ.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /container -->
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
