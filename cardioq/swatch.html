@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CardioQ — Color System</title>
+<meta name="description" content="The CardioQ brand color system — logo-derived azure/cyan/pulse on blue-black.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070b14; --surface:#0e1626; --surface2:#16213a; --line:#243049;
+    --txt:#c2d0e4; --txt-strong:#eaf1fb; --muted:#8597b4;
+    --primary:#1f6fe5; --cyan:#22c3ed; --pulse:#fb5249;
+    --grad:linear-gradient(135deg,#1a4fd0 0%,#1f6fe5 42%,#22c3ed 100%);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--txt);font-family:"Plus Jakarta Sans",system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--cyan);text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 26px}
+  code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(60% 90% at 88% -10%,rgba(34,195,237,.20),transparent 55%),
+    radial-gradient(50% 80% at 6% 120%,rgba(31,111,229,.22),transparent 60%);}
+  .hero .wrap{position:relative;padding:64px 26px 54px}
+  .badge{display:inline-flex;align-items:center;gap:9px;padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);font-size:12.5px;font-weight:600;color:var(--txt);margin-bottom:26px}
+  .badge .hb{width:9px;height:9px;border-radius:50%;background:var(--pulse);box-shadow:0 0 10px var(--pulse);animation:beat 1.4s ease-in-out infinite}
+  @keyframes beat{0%,100%{transform:scale(1);opacity:1}45%{transform:scale(1.5);opacity:.65}}
+  @media (prefers-reduced-motion:reduce){.badge .hb{animation:none}}
+  .hero h1{font-family:"Outfit";font-weight:800;font-size:clamp(34px,5.4vw,58px);line-height:1.02;letter-spacing:-1px;margin:0 0 16px;color:var(--txt-strong)}
+  .hero h1 .g{color:#54d5f4}
+  .hero p{max-width:600px;margin:0;font-size:16px;color:var(--muted)}
+  .heart{position:absolute;right:-30px;top:50%;transform:translateY(-50%);width:330px;height:330px;border-radius:50%;background:var(--grad);filter:blur(2px);opacity:.16;mask:radial-gradient(circle at 50% 42%,#000 62%,transparent 63%);-webkit-mask:radial-gradient(circle at 50% 42%,#000 62%,transparent 63%)}
+
+  .cores{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+  .core{border-radius:14px;padding:18px;border:1px solid var(--line);position:relative;min-height:104px;display:flex;flex-direction:column;justify-content:flex-end}
+  .core .nm{font-family:"Outfit";font-weight:700;font-size:14px}
+  .core .hx{font-family:"JetBrains Mono";font-size:12px;opacity:.85;margin-top:2px}
+  .core .role{position:absolute;top:14px;left:18px;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.8}
+
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  .sec-h{display:flex;align-items:baseline;gap:12px;margin:0 0 22px}
+  .sec-h h2{font-family:"Outfit";font-weight:700;font-size:21px;margin:0;color:var(--txt-strong);letter-spacing:-.2px}
+  .sec-h .k{font-family:"JetBrains Mono";font-size:11px;font-weight:600;color:var(--cyan);text-transform:uppercase;letter-spacing:1.4px}
+  .sec-h .rule{flex:1;height:1px;background:var(--line)}
+
+  .ramp{margin-bottom:20px}
+  .ramp .lab{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 8px}
+  .ramp .lab b{font-family:"Outfit";font-weight:700;font-size:14px;color:var(--txt-strong)}
+  .ramp .lab span{font-size:12px;color:var(--muted)}
+  .row{display:grid;grid-template-columns:repeat(11,1fr);gap:8px}
+  .swc{display:flex;flex-direction:column;gap:6px}
+  .sw{border-radius:9px;height:54px;border:1px solid rgba(255,255,255,.06)}
+  .sw-meta{font-family:"JetBrains Mono";line-height:1.3;padding:0 1px}
+  .sw-meta .s{display:block;font-weight:700;font-size:10.5px;color:var(--txt-strong)}
+  .sw-meta .h{display:block;font-size:9.5px;color:var(--muted)}
+  @media (max-width:760px){.row{grid-template-columns:repeat(6,1fr)}.cores{grid-template-columns:repeat(2,1fr)}}
+
+  .gradband{height:120px;border-radius:var(--radius);background:var(--grad);display:flex;align-items:flex-end;padding:16px 20px;font-family:"JetBrains Mono";font-size:12px;font-weight:600}
+  .gchip{background:rgba(7,11,20,.62);color:#dfeafb;padding:6px 12px;border-radius:8px}
+
+  .themes{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:760px){.themes{grid-template-columns:1fr}}
+  .demo{border-radius:var(--radius);border:1px solid var(--line);overflow:hidden}
+  .demo .top{padding:11px 16px;font-family:"JetBrains Mono";font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid}
+  .demo .body{padding:20px}
+  .demo .card{border-radius:12px;padding:16px;border:1px solid;margin-bottom:14px}
+  .demo h4{font-family:"Outfit";font-weight:700;margin:0 0 4px;font-size:16px}
+  .demo .sub{font-size:12.5px;margin:0 0 14px}
+  .btn{display:inline-block;font-family:"Plus Jakarta Sans";font-weight:700;font-size:13px;padding:9px 16px;border-radius:9px;border:0}
+  .btn+.btn{margin-left:8px}
+  .vit{display:flex;align-items:center;gap:10px;font-family:"JetBrains Mono";font-size:14px;font-weight:600}
+  .vit .dot{width:8px;height:8px;border-radius:50%}
+
+  .usage{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:760px){.usage{grid-template-columns:1fr}}
+  .u{border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-size:13.5px}
+  .u b{font-family:"Outfit";color:var(--txt-strong);display:block;margin-bottom:6px;font-size:14px}
+  .u.do b::before{content:"✓ ";color:#34d399}
+  .u.dont b::before{content:"✕ ";color:var(--pulse)}
+
+  footer{padding:30px 0 60px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+  <header class="hero">
+    <div class="heart"></div>
+    <div class="wrap">
+      <div class="badge"><span class="hb"></span>CardioQ.ai · brand color system</div>
+      <h1>The <span class="g">CardioQ</span> palette</h1>
+      <p>Logo-derived: an azure&rarr;cyan blue heart, a coral-red ECG pulse, on blue-black. Engineered for a cardio-AI product — dark-native, with an accessible light theme.</p>
+      <div class="cores" id="cores"></div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section>
+      <div class="sec-h"><span class="k">ramps</span><h2>Color ramps</h2><div class="rule"></div></div>
+      <div id="ramps"></div>
+    </section>
+
+    <section>
+      <div class="sec-h"><span class="k">signature</span><h2>The CardioQ gradient</h2><div class="rule"></div></div>
+      <div class="gradband"><span class="gchip">linear-gradient(135deg, #1A4FD0, #1F6FE5 42%, #22C3ED)</span></div>
+      <p style="margin:14px 2px 0;font-size:13.5px;color:var(--muted)">The heart gradient — cobalt &rarr; azure &rarr; cyan. Use for hero surfaces, the logo lockup, charts and the primary accent. Bring in the <b style="color:var(--pulse)">pulse</b> red only for vitals / alerts / the ECG motif — never as a fill.</p>
+    </section>
+
+    <section>
+      <div class="sec-h"><span class="k">applied</span><h2>Dark &amp; light themes</h2><div class="rule"></div></div>
+      <div class="themes" id="themes"></div>
+    </section>
+
+    <section style="border-bottom:0">
+      <div class="sec-h"><span class="k">rules</span><h2>Usage</h2><div class="rule"></div></div>
+      <div class="usage">
+        <div class="u do"><b>Blue leads</b>Azure #1F6FE5 is the primary; cyan #22C3ED is the signal / secondary. The brand is dark-native — design dark-first, then light.</div>
+        <div class="u do"><b>Pulse is a signal</b>Coral-red #FB5249 = the heartbeat: vitals, alerts, the ECG line, live states. High-impact, low-frequency.</div>
+        <div class="u dont"><b>Don't flood with red</b>Never use pulse as a background or large fill — at scale it reads as error / danger.</div>
+        <div class="u dont"><b>Don't blend with ZiffyHealth green</b>CardioQ = blue / cyan / coral; ZiffyHealth = green. Keep the systems separate; co-brand with logos, not by mixing palettes.</div>
+      </div>
+    </section>
+  </div>
+
+  <footer><div class="wrap">CardioQ.ai — color system · derived from the CardioQ mark · v1</div></footer>
+
+<script>
+  var RAMPS = {
+    "Azure — Primary": ["#ebf3fe","#d7e6fd","#b3cffb","#84b0f8","#4f8df1","#1f6fe5","#1657c6","#1546a1","#163c82","#16356a","#0f2148"],
+    "Cyan — Signal":   ["#e7fafe","#c7f2fc","#93e6fa","#54d5f4","#22c3ed","#0da9d6","#0e87b3","#136c8f","#175974","#184a60","#0a3040"],
+    "Pulse — Accent":  ["#ffedeb","#ffd8d3","#ffb4ab","#ff877c","#fb5249","#ee2f28","#cc1d1c","#a81a1b","#8a1a1c","#72191d","#3f0a0b"],
+    "Slate — Neutral": ["#f5f8fc","#eaeff7","#d6dfec","#b4c2d8","#8597b4","#5f7293","#485a77","#38475e","#28344b","#1a2437","#0b1220"]
+  };
+  var STEPS = [50,100,200,300,400,500,600,700,800,900,950];
+  var CORES = [
+    {role:"Primary", nm:"Azure", hex:"#1f6fe5", on:"#ffffff"},
+    {role:"Signal",  nm:"Cyan",  hex:"#22c3ed", on:"#062430"},
+    {role:"Accent",  nm:"Pulse", hex:"#fb5249", on:"#2a0807"},
+    {role:"Base",    nm:"Ink",   hex:"#0a0f1a", on:"#c2d0e4"}
+  ];
+  function hexL(h){var n=parseInt(h.slice(1),16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255;function f(v){return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);}return .2126*f(r)+.7152*f(g)+.0722*f(b);}
+  function ink(h){return hexL(h)>0.42 ? "#0a0f1a" : "#ffffff";}
+  function E(tag,cls,style,text){var e=document.createElement(tag);if(cls)e.className=cls;if(style)e.setAttribute("style",style);if(text!=null)e.textContent=text;return e;}
+
+  var coresEl=document.getElementById("cores");
+  CORES.forEach(function(c){
+    var d=E("div","core","background:"+c.hex+";color:"+c.on);
+    d.appendChild(E("div","role",null,c.role));
+    d.appendChild(E("div","nm",null,c.nm));
+    d.appendChild(E("div","hx",null,c.hex.toUpperCase()));
+    coresEl.appendChild(d);
+  });
+
+  var rampsEl=document.getElementById("ramps");
+  Object.keys(RAMPS).forEach(function(name){
+    var cols=RAMPS[name];
+    var r=E("div","ramp");
+    var lab=E("div","lab");
+    lab.appendChild(E("b",null,null,name));
+    var note = name.indexOf("Primary")>-1 ? ("500 = "+cols[5].toUpperCase())
+             : (name.indexOf("Signal")>-1||name.indexOf("Accent")>-1) ? ("400 = "+cols[4].toUpperCase())
+             : "11 steps";
+    lab.appendChild(E("span",null,null,note));
+    r.appendChild(lab);
+    var row=E("div","row");
+    cols.forEach(function(h,i){
+      var swc=E("div","swc");
+      swc.appendChild(E("div","sw","background:"+h));
+      var meta=E("div","sw-meta");
+      meta.appendChild(E("span","s",null,String(STEPS[i])));
+      meta.appendChild(E("span","h",null,h.toUpperCase()));
+      swc.appendChild(meta);
+      row.appendChild(swc);
+    });
+    r.appendChild(row);
+    rampsEl.appendChild(r);
+  });
+
+  var themes=[
+    {key:"Dark (native)",bg:"#070b14",surf:"#0e1626",txt:"#eaf1fb",sub:"#8597b4",topbg:"#0b1220",topln:"#243049",topc:"#8597b4",primary:"#4f8df1",onPrimary:"#08152a",signal:"#22c3ed",pulse:"#ff6a60",cardbg:"#16213a",cardln:"#2a3a57"},
+    {key:"Light",bg:"#f5f8fc",surf:"#ffffff",txt:"#14233b",sub:"#5b6e8c",topbg:"#eaeff7",topln:"#d6dfec",topc:"#50617b",primary:"#1659c4",onPrimary:"#ffffff",signal:"#11718f",pulse:"#d4231d",cardbg:"#ffffff",cardln:"#e3eaf4"}
+  ];
+  var themesEl=document.getElementById("themes");
+  themes.forEach(function(t){
+    var demo=E("div","demo","background:"+t.surf);
+    demo.appendChild(E("div","top","background:"+t.topbg+";color:"+t.topc+";border-color:"+t.topln,t.key));
+    var body=E("div","body","background:"+t.bg);
+    var card=E("div","card","background:"+t.cardbg+";border-color:"+t.cardln);
+    card.appendChild(E("h4",null,"color:"+t.txt,"Resting heart rate"));
+    card.appendChild(E("p","sub","color:"+t.sub,"7-day average · synced 4 min ago"));
+    var vit=E("div","vit","color:"+t.signal);
+    vit.appendChild(E("span","dot","background:"+t.pulse+";box-shadow:0 0 8px "+t.pulse));
+    vit.appendChild(E("span",null,"color:"+t.txt,"62"));
+    vit.appendChild(E("span",null,"color:"+t.sub+";font-weight:500","bpm"));
+    card.appendChild(vit);
+    body.appendChild(card);
+    body.appendChild(E("span","btn","background:"+t.primary+";color:"+t.onPrimary,"View analysis"));
+    body.appendChild(E("span","btn","background:transparent;color:"+t.signal+";border:1px solid "+t.signal,"Export"));
+    demo.appendChild(body);
+    themesEl.appendChild(demo);
+  });
+</script>
+</body>
+</html>

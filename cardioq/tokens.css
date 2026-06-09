@@ -1,0 +1,63 @@
+/* ============================================================================
+   CardioQ — color tokens (v1.0.0)
+   Derived from the CardioQ.ai logo: azure→cyan heart, coral-red ECG pulse, blue-black.
+   Light theme by default; dark theme via [data-theme="dark"] or prefers-color-scheme.
+   Pair with: Outfit (display), Plus Jakarta Sans (body), JetBrains Mono (mono).
+   ============================================================================ */
+:root{
+  /* --- ramps --- */
+  --cq-azure-50:#ebf3fe; --cq-azure-100:#d7e6fd; --cq-azure-200:#b3cffb; --cq-azure-300:#84b0f8;
+  --cq-azure-400:#4f8df1; --cq-azure-500:#1f6fe5; --cq-azure-600:#1657c6; --cq-azure-700:#1546a1;
+  --cq-azure-800:#163c82; --cq-azure-900:#16356a; --cq-azure-950:#0f2148;
+
+  --cq-cyan-50:#e7fafe; --cq-cyan-100:#c7f2fc; --cq-cyan-200:#93e6fa; --cq-cyan-300:#54d5f4;
+  --cq-cyan-400:#22c3ed; --cq-cyan-500:#0da9d6; --cq-cyan-600:#0e87b3; --cq-cyan-700:#136c8f;
+  --cq-cyan-800:#175974; --cq-cyan-900:#184a60; --cq-cyan-950:#0a3040;
+
+  --cq-pulse-50:#ffedeb; --cq-pulse-100:#ffd8d3; --cq-pulse-200:#ffb4ab; --cq-pulse-300:#ff877c;
+  --cq-pulse-400:#fb5249; --cq-pulse-500:#ee2f28; --cq-pulse-600:#cc1d1c; --cq-pulse-700:#a81a1b;
+  --cq-pulse-800:#8a1a1c; --cq-pulse-900:#72191d; --cq-pulse-950:#3f0a0b;
+
+  --cq-slate-50:#f5f8fc; --cq-slate-100:#eaeff7; --cq-slate-200:#d6dfec; --cq-slate-300:#b4c2d8;
+  --cq-slate-400:#8597b4; --cq-slate-500:#5f7293; --cq-slate-600:#485a77; --cq-slate-700:#38475e;
+  --cq-slate-800:#28344b; --cq-slate-900:#1a2437; --cq-slate-950:#0b1220;
+
+  --cq-ink:#0a0f1a; --cq-paper:#ffffff;
+  --cq-gradient-heart:linear-gradient(135deg,#1a4fd0 0%,#1f6fe5 42%,#22c3ed 100%);
+
+  /* --- semantic (light) --- */
+  --cq-bg:#f5f8fc; --cq-surface:#ffffff; --cq-surface-2:#eaeff7;
+  --cq-border:#d6dfec; --cq-border-soft:#eaeff7;
+  --cq-text-strong:#14233b; --cq-text:#28344b; --cq-muted:#5b6e8c;
+  --cq-primary:#1f6fe5; --cq-primary-hover:#1657c6; --cq-primary-solid:#1659c4; --cq-on-primary:#ffffff;
+  --cq-secondary:#11718f; --cq-secondary-solid:#0e87b3; --cq-on-secondary:#ffffff;
+  --cq-accent:#d4231d; --cq-accent-solid:#ee2f28; --cq-on-accent:#ffffff;
+  --cq-ring:#4f8df1;
+
+  /* type */
+  --cq-font-display:"Outfit",system-ui,sans-serif;
+  --cq-font-body:"Plus Jakarta Sans",system-ui,sans-serif;
+  --cq-font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+
+/* --- semantic (dark) --- the brand's native context --- */
+:root[data-theme="dark"]{
+  --cq-bg:#070b14; --cq-surface:#0e1626; --cq-surface-2:#16213a;
+  --cq-border:#243049; --cq-border-soft:#1a2437;
+  --cq-text-strong:#eaf1fb; --cq-text:#c2d0e4; --cq-muted:#93a3bf;
+  --cq-primary:#4f8df1; --cq-primary-hover:#84b0f8; --cq-primary-solid:#4f8df1; --cq-on-primary:#08152a;
+  --cq-secondary:#22c3ed; --cq-secondary-solid:#22c3ed; --cq-on-secondary:#062430;
+  --cq-accent:#ff6a60; --cq-accent-solid:#ff6a60; --cq-on-accent:#2a0807;
+  --cq-ring:#4f8df1;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --cq-bg:#070b14; --cq-surface:#0e1626; --cq-surface-2:#16213a;
+    --cq-border:#243049; --cq-border-soft:#1a2437;
+    --cq-text-strong:#eaf1fb; --cq-text:#c2d0e4; --cq-muted:#93a3bf;
+    --cq-primary:#4f8df1; --cq-primary-hover:#84b0f8; --cq-primary-solid:#4f8df1; --cq-on-primary:#08152a;
+    --cq-secondary:#22c3ed; --cq-secondary-solid:#22c3ed; --cq-on-secondary:#062430;
+    --cq-accent:#ff6a60; --cq-accent-solid:#ff6a60; --cq-on-accent:#2a0807;
+    --cq-ring:#4f8df1;
+  }
+}
