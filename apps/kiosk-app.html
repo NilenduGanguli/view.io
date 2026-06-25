@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZiffyHealth — Self-Service Kiosk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="app.css">
+<style>
+  /* ============================================================================
+     kiosk-app local helpers — LANDSCAPE self-service terminal framing.
+     No new colors: every value is a token/class from app.css. Light mode only.
+     ============================================================================ */
+  body { background:var(--bg-subtle); display:grid; place-items:center; min-height:100vh; padding:28px; }
+
+  /* The physical kiosk: a landscape touch terminal sitting on its stand. */
+  .kiosk { width:100%; max-width:1180px; }
+  .kiosk-frame {
+    position:relative; background:#0A1A05; border-radius:30px; padding:16px;
+    box-shadow:var(--shadow-lg), inset 0 0 0 2px rgba(255,255,255,.04);
+  }
+  .kiosk-screen {
+    position:relative; background:var(--bg); border-radius:18px; overflow:hidden;
+    aspect-ratio:16/10; display:flex; flex-direction:column;
+  }
+  /* a thin camera/sensor strip at the top bezel */
+  .kiosk-frame::before {
+    content:""; position:absolute; top:7px; left:50%; transform:translateX(-50%);
+    width:78px; height:5px; border-radius:999px; background:rgba(255,255,255,.10);
+  }
+  .kiosk-stand { width:34%; height:16px; margin:0 auto; background:linear-gradient(180deg,#0A1A05,#06120300);
+    border-radius:0 0 12px 12px; }
+  .kiosk-base { width:46%; height:12px; margin:6px auto 0; background:var(--neutral-300); border-radius:999px; opacity:.7; }
+
+  /* ===== Top status bar inside the kiosk (always visible) ===== */
+  .kbar { display:flex; align-items:center; gap:12px; padding:13px 22px; background:var(--surface);
+    border-bottom:1px solid var(--border); flex:0 0 auto; }
+  .kbar .brand { display:flex; align-items:center; gap:10px; }
+  .kbar .brand .logo { width:34px; height:34px; border-radius:50%; background:#fff; overflow:hidden;
+    display:grid; place-items:center; box-shadow:inset 0 0 0 1px var(--border); flex:0 0 auto; }
+  .kbar .brand .logo img { width:100%; height:100%; object-fit:cover; }
+  .kbar .brand .name { font-family:var(--font-display); font-weight:800; font-size:16px; color:var(--text-strong); line-height:1; }
+  .kbar .brand .name b { color:var(--primary); }
+  .kbar .brand .sub { font-size:9.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--text-muted); margin-top:2px; }
+  .kbar .spacer { flex:1; }
+  .kbar .kstat { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-weight:600; }
+  .kbar .kstat svg { width:15px; height:15px; }
+  .kbar .clock { font-family:var(--font-mono); font-size:12.5px; color:var(--text-strong); font-weight:600; }
+  .kbar .langpill { font-size:11.5px; font-weight:700; color:var(--primary-subtle-text); background:var(--primary-subtle);
+    border-radius:999px; padding:4px 11px; }
+
+  /* ===== Screen stage ===== */
+  .kstage { flex:1; min-height:0; overflow:auto; }
+  .kscreen { display:none; min-height:100%; }
+  .kscreen.active { display:block; animation:kfade .3s ease; }
+  @keyframes kfade { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  @media (prefers-reduced-motion:reduce){ .kscreen,.kscreen.active{animation:none;} }
+  .kpad { padding:30px 40px; }
+
+  /* touch-sized buttons (kiosk ergonomics) */
+  .kbtn { display:inline-flex; align-items:center; justify-content:center; gap:10px; font-family:var(--font-body);
+    font-weight:700; font-size:16px; padding:15px 26px; border-radius:14px; border:1px solid transparent; cursor:pointer; transition:.12s; }
+  .kbtn svg { width:20px; height:20px; }
+  .kbtn-primary { background:var(--primary); color:#fff; box-shadow:0 4px 14px rgba(39,127,8,.28); }
+  .kbtn-primary:hover { background:var(--primary-hover); }
+  .kbtn-outline { background:var(--surface); color:var(--text-strong); border-color:var(--border-strong); }
+  .kbtn-outline:hover { border-color:var(--primary); color:var(--primary); }
+  .kbtn-ghost { background:transparent; color:var(--text-muted); font-weight:600; }
+  .kbtn-ghost:hover { color:var(--text-strong); }
+  .kbtn.block { width:100%; }
+
+  /* ===== 1. ATTRACT / LANDING ===== */
+  .attract { position:relative; min-height:100%;
+    background:radial-gradient(120% 130% at 80% -10%,rgba(55,130,36,.55),transparent 55%),
+               linear-gradient(135deg,var(--hero-from),var(--hero-via) 55%,var(--hero-to));
+    color:#eaf6e6; display:flex; flex-direction:column; justify-content:center; padding:0 64px; }
+  .attract::after { content:""; position:absolute; inset:0;
+    background:radial-gradient(60% 80% at 8% 120%,rgba(126,224,160,.16),transparent 60%); pointer-events:none; }
+  .attract .inner { position:relative; max-width:640px; }
+  .attract .eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; letter-spacing:.04em;
+    background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18); color:#dff3d8; padding:7px 14px; border-radius:999px; }
+  .attract .eyebrow .dot { width:7px; height:7px; border-radius:50%; background:#7EE0A0; box-shadow:0 0 8px #7EE0A0; }
+  .attract h1 { font-family:var(--font-display); font-weight:800; font-size:clamp(32px,4.4vw,52px); line-height:1.04;
+    margin:20px 0 14px; color:#fff; letter-spacing:-.01em; }
+  .attract h1 em { font-style:normal; color:#9be3a6; }
+  .attract p { font-size:17px; color:#cfe9c6; max-width:520px; margin:0 0 30px; }
+  .attract .cta-row { display:flex; gap:14px; flex-wrap:wrap; }
+  .attract .tap-hint { margin-top:34px; font-size:13px; color:#8fb588; display:flex; align-items:center; gap:8px; }
+  .attract .tap-hint .pulse { width:11px; height:11px; border-radius:50%; background:#7EE0A0;
+    box-shadow:0 0 0 0 rgba(126,224,160,.6); animation:kpulse 1.8s infinite; }
+  @keyframes kpulse { 0%{box-shadow:0 0 0 0 rgba(126,224,160,.5);} 70%{box-shadow:0 0 0 14px rgba(126,224,160,0);} 100%{box-shadow:0 0 0 0 rgba(126,224,160,0);} }
+
+  /* ===== Generic kiosk header (non-attract screens) ===== */
+  .khead { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; }
+  .khead h2 { font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--text-strong); }
+  .khead .ksub { color:var(--text-muted); font-size:14px; margin-top:4px; }
+
+  /* ===== 2. SIGN-IN ===== */
+  .signin-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:26px; align-items:start; }
+  .method-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow-sm); padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer; transition:.12s; }
+  .method-card:hover { border-color:var(--primary); box-shadow:var(--shadow); }
+  .method-card.sel { border-color:var(--primary); background:var(--primary-subtle); }
+  .method-card .mi { width:48px; height:48px; border-radius:13px; background:var(--surface-sunken); color:var(--primary);
+    display:grid; place-items:center; flex:0 0 auto; }
+  .method-card.sel .mi { background:#fff; }
+  .method-card .mi svg { width:24px; height:24px; }
+  .method-card .mt { font-family:var(--font-display); font-weight:700; font-size:16px; color:var(--text-strong); }
+  .method-card .md { font-size:13px; color:var(--text-muted); margin-top:2px; }
+  .keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:8px; }
+  .key { font-family:var(--font-display); font-weight:700; font-size:22px; color:var(--text-strong); background:var(--surface);
+    border:1px solid var(--border-strong); border-radius:14px; padding:16px 0; text-align:center; cursor:pointer; transition:.1s; }
+  .key:hover { border-color:var(--primary); color:var(--primary); }
+  .key.ghost { background:var(--surface-muted); color:var(--text-muted); border-color:var(--border); }
+  .otp-dots { display:flex; gap:12px; justify-content:center; margin:6px 0 18px; }
+  .otp-dots span { width:46px; height:54px; border-radius:12px; border:1px solid var(--border-strong); background:var(--surface);
+    display:grid; place-items:center; font-family:var(--font-mono); font-size:22px; font-weight:600; color:var(--text-strong); }
+  .otp-dots span.filled { border-color:var(--primary); color:var(--primary); }
+
+  /* ===== 3. DASHBOARD OF SERVICES ===== */
+  .svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .svc { position:relative; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow-sm); padding:22px; cursor:pointer; transition:.14s; text-align:left; display:flex; flex-direction:column; gap:12px; }
+  .svc:hover { transform:translateY(-3px); border-color:var(--primary); box-shadow:var(--shadow); }
+  .svc .si { width:50px; height:50px; border-radius:14px; display:grid; place-items:center;
+    background:var(--primary-subtle); color:var(--primary-subtle-text); }
+  .svc .si svg { width:25px; height:25px; }
+  .svc h3 { font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--text-strong); }
+  .svc p { font-size:13px; color:var(--text-muted); line-height:1.45; }
+  .svc .go { margin-top:auto; font-weight:700; font-size:13px; color:var(--primary); display:inline-flex; align-items:center; gap:6px; }
+  .svc .stag { position:absolute; top:18px; right:18px; font-family:var(--font-mono); font-size:10px; font-weight:600;
+    letter-spacing:.04em; text-transform:uppercase; color:var(--text-muted); background:var(--surface-muted);
+    border:1px solid var(--border); border-radius:999px; padding:3px 9px; }
+
+  /* ===== 4. VITALS CAPTURE ===== */
+  .vitals-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+  .vital { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-sm);
+    padding:18px; display:flex; flex-direction:column; gap:8px; }
+  .vital .vh { display:flex; align-items:center; gap:8px; font-size:11.5px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--text-muted); font-weight:700; }
+  .vital .vh svg { width:16px; height:16px; color:var(--primary); }
+  .vital .vv { font-family:var(--font-display); font-weight:800; font-size:30px; color:var(--text-strong); line-height:1; }
+  .vital .vv small { font-family:var(--font-body); font-size:13px; font-weight:600; color:var(--text-muted); margin-left:4px; }
+  .capture-stage { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-sm);
+    padding:26px; display:flex; align-items:center; gap:26px; flex-wrap:wrap; }
+  .scan-ring { width:120px; height:120px; border-radius:50%; flex:0 0 auto; display:grid; place-items:center;
+    background:var(--primary-subtle); color:var(--primary); position:relative; }
+  .scan-ring svg.icon { width:48px; height:48px; }
+  .scan-ring::after { content:""; position:absolute; inset:-6px; border-radius:50%; border:3px solid var(--primary);
+    border-top-color:transparent; animation:kspin 1.4s linear infinite; }
+  @keyframes kspin { to{ transform:rotate(360deg);} }
+  @media (prefers-reduced-motion:reduce){ .scan-ring::after{ animation:none; opacity:.5;} }
+
+  /* ===== 6. TELEMEDICINE ===== */
+  .tele-stage { position:relative; border-radius:var(--radius-lg); overflow:hidden; min-height:330px;
+    background:linear-gradient(135deg,var(--hero-from),var(--hero-via) 60%,var(--hero-to)); color:#eaf6e6;
+    display:grid; place-items:center; padding:22px; }
+  .tele-who { text-align:center; }
+  .tele-who .av { width:104px; height:104px; border-radius:50%; margin:0 auto 14px; display:grid; place-items:center;
+    background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18); font-family:var(--font-display);
+    font-weight:800; font-size:36px; color:#fff; }
+  .tele-who .nm { font-family:var(--font-display); font-weight:700; font-size:22px; color:#fff; }
+  .tele-who .sp { font-size:14px; color:#8fb588; margin-top:3px; }
+  .tele-pip { position:absolute; right:22px; bottom:96px; width:150px; height:104px; border-radius:14px;
+    background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18); display:grid; place-items:center;
+    color:#bcd9b3; font-weight:700; font-size:14px; }
+  .tele-status { position:absolute; top:18px; left:18px; display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:6px 13px;
+    font-size:12.5px; font-weight:700; color:#dff3d8; }
+  .tele-status .dot { width:8px; height:8px; border-radius:50%; background:#7EE0A0; box-shadow:0 0 8px #7EE0A0; }
+  .tele-controls { position:absolute; left:0; right:0; bottom:18px; display:flex; gap:14px; justify-content:center; }
+  .tctl { width:54px; height:54px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.10);
+    color:#eaf6e6; display:grid; place-items:center; cursor:pointer; }
+  .tctl:hover { background:rgba(255,255,255,.18); }
+  .tctl svg { width:22px; height:22px; }
+  .tctl.leave { background:var(--red-600); border-color:transparent; color:#fff; width:auto; padding:0 22px; border-radius:999px;
+    gap:9px; font-weight:700; font-family:var(--font-body); font-size:15px; }
+
+  /* footer action bar pinned to the kiosk */
+  .kfoot { display:flex; align-items:center; gap:12px; padding:14px 40px; border-top:1px solid var(--border);
+    background:var(--surface); flex:0 0 auto; }
+  .kfoot .who { display:flex; align-items:center; gap:11px; }
+  .kfoot .who .av { width:38px; height:38px; border-radius:50%; background:var(--surface-sunken); color:var(--primary);
+    display:grid; place-items:center; font-weight:700; font-family:var(--font-display); }
+  .kfoot .who .nm { font-weight:700; color:var(--text-strong); font-size:13.5px; line-height:1.2; }
+  .kfoot .who .mr { font-size:11.5px; color:var(--text-muted); }
+
+  @media (max-width:820px){
+    .signin-grid{ grid-template-columns:1fr; } .svc-grid{ grid-template-columns:1fr 1fr; }
+    .vitals-grid{ grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="kiosk">
+  <div class="kiosk-frame">
+    <div class="kiosk-screen">
+
+      <!-- ============ STATUS BAR ============ -->
+      <div class="kbar">
+        <div class="brand">
+          <div class="logo"><img src="assets/brand-1-d898a4cf.jpg" alt=""></div>
+          <div>
+            <div class="name">Ziffy<b>Health</b></div>
+            <div class="sub">Self-Service Kiosk</div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <span class="langpill">EN · हिं</span>
+        <div class="kstat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          ABDM Linked
+        </div>
+        <div class="kstat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5a7 7 0 0 1 14 0M8.5 15.5a3.5 3.5 0 0 1 7 0M2 9.5a11 11 0 0 1 20 0"/><circle cx="12" cy="19" r="1"/></svg>
+          Online
+        </div>
+        <div class="clock">10:42 AM · Kiosk K-03</div>
+      </div>
+
+      <!-- ============ STAGE ============ -->
+      <div class="kstage">
+
+        <!-- ===== 1. ATTRACT / LANDING ===== -->
+        <section class="kscreen active" id="k-attract">
+          <div class="attract">
+            <div class="inner">
+              <span class="eyebrow"><span class="dot"></span>Walk in · no appointment needed</span>
+              <h1>Your health,<br><em>one tap away.</em></h1>
+              <p>Check in, capture your vitals, view your reports, or start a video consult — right here, in your language.</p>
+              <div class="cta-row">
+                <button class="kbtn kbtn-primary" data-go="k-signin">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5M15 12H3"/></svg>
+                  Tap to begin
+                </button>
+                <button class="kbtn kbtn-outline" data-go="k-services" style="background:rgba(255,255,255,.08); color:#eaf6e6; border-color:rgba(255,255,255,.22);">
+                  Browse services
+                </button>
+              </div>
+              <div class="tap-hint"><span class="pulse"></span>Touch anywhere to start · सेवा शुरू करने के लिए स्पर्श करें</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 2. SIGN-IN ===== -->
+        <section class="kscreen" id="k-signin">
+          <div class="kpad">
+            <div class="khead">
+              <div>
+                <h2>How would you like to check in?</h2>
+                <div class="ksub">Choose a method. We never store your Aadhaar or OTP.</div>
+              </div>
+              <button class="kbtn kbtn-ghost" data-go="k-attract">← Back</button>
+            </div>
+
+            <div class="signin-grid">
+              <div>
+                <div class="method-card sel" style="margin-bottom:14px;">
+                  <div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 8h4M7 12h2"/><circle cx="16.5" cy="11" r="2.5"/><path d="M14 16c.4-1.2 1.4-2 2.5-2s2.1.8 2.5 2"/></svg></div>
+                  <div>
+                    <div class="mt">ABHA / Aadhaar OTP</div>
+                    <div class="md">Enter your 14-digit ABHA number — verify with the OTP on your phone.</div>
+                  </div>
+                </div>
+                <div class="method-card" style="margin-bottom:14px;">
+                  <div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></div>
+                  <div>
+                    <div class="mt">Mobile number</div>
+                    <div class="md">We'll text a one-time code to your registered phone.</div>
+                  </div>
+                </div>
+                <div class="method-card">
+                  <div class="mi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                  <div>
+                    <div class="mt">Scan your patient card</div>
+                    <div class="md">Hold the QR on your ZiffyHealth card to the scanner below.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card pad">
+                <div class="label" style="margin-bottom:6px;">Enter the 6-digit OTP sent to +91 ••••• •3210</div>
+                <div class="otp-dots">
+                  <span class="filled">4</span><span class="filled">1</span><span class="filled">8</span>
+                  <span>—</span><span>—</span><span>—</span>
+                </div>
+                <div class="keypad">
+                  <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+                  <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+                  <div class="key">7</div><div class="key">8</div><div class="key">9</div>
+                  <div class="key ghost">Clear</div><div class="key">0</div><div class="key ghost">⌫</div>
+                </div>
+                <button class="kbtn kbtn-primary block" data-go="k-services" style="margin-top:16px;">Verify &amp; continue</button>
+                <div class="ksub" style="text-align:center; margin-top:10px; font-size:12.5px; color:var(--text-muted);">Resend code in 0:24</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 3. DASHBOARD OF SERVICES ===== -->
+        <section class="kscreen" id="k-services">
+          <div class="kpad">
+            <div class="khead">
+              <div>
+                <h2>Welcome, Asha 👋</h2>
+                <div class="ksub">What would you like to do today? · ZiffyHealth Clinic, Bengaluru</div>
+              </div>
+              <span class="badge primary" style="font-size:13px; padding:7px 14px;"><span class="dot"></span>ABHA verified</span>
+            </div>
+
+            <div class="svc-grid">
+              <button class="svc" data-go="k-vitals">
+                <span class="stag">2 min</span>
+                <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+                <h3>Capture vitals</h3>
+                <p>Measure blood pressure, pulse, SpO₂, temperature and weight at the station.</p>
+                <span class="go">Start now →</span>
+              </button>
+
+              <button class="svc" data-go="k-services">
+                <span class="stag">walk-in</span>
+                <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                <h3>Check in for visit</h3>
+                <p>Join the queue for a doctor, or confirm your booked appointment.</p>
+                <span class="go">Get token →</span>
+              </button>
+
+              <button class="svc" data-go="k-report">
+                <span class="stag">ready</span>
+                <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h2l1.5 4 2-7 1.5 3H17"/></svg></span>
+                <h3>View &amp; print reports</h3>
+                <p>See your latest lab results — print or e-mail a copy to yourself.</p>
+                <span class="go">Open reports →</span>
+              </button>
+
+              <button class="svc" data-go="k-tele">
+                <span class="stag">live</span>
+                <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></span>
+                <h3>Video consult</h3>
+                <p>Speak to a doctor on screen now — no appointment required.</p>
+                <span class="go">Connect →</span>
+              </button>
+
+              <button class="svc" data-go="k-services">
+                <span class="stag">Rx</span>
+                <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h7a4 4 0 0 1 0 8H5z"/><path d="M5 12v8"/><path d="m13 14 6 6M19 14l-6 6"/></svg></span>
+                <h3>Prescriptions</h3>
+                <p>Review your active medications and print your latest prescription.</p>
+                <span class="go">View Rx →</span>
+              </button>
+
+              <button class="svc" data-go="k-services">
+                <span class="stag">pay</span>
+                <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg></span>
+                <h3>Pay &amp; receipts</h3>
+                <p>Settle an outstanding invoice and collect a printed receipt.</p>
+                <span class="go">Pay now →</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 4. VITALS CAPTURE ===== -->
+        <section class="kscreen" id="k-vitals">
+          <div class="kpad">
+            <div class="khead">
+              <div>
+                <h2>Vitals capture</h2>
+                <div class="ksub">Place your arm in the cuff and rest your finger on the sensor.</div>
+              </div>
+              <button class="kbtn kbtn-ghost" data-go="k-services">← Services</button>
+            </div>
+
+            <div class="capture-stage" style="margin-bottom:22px;">
+              <div class="scan-ring">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>
+              </div>
+              <div style="flex:1; min-width:220px;">
+                <div class="strong" style="font-size:16px; margin-bottom:4px;">Measuring blood pressure…</div>
+                <div class="muted small" style="margin-bottom:12px;">Stay still and breathe normally. This takes about 30 seconds.</div>
+                <div class="range" style="max-width:360px;"><span class="mark" style="left:38%;"></span></div>
+                <div class="chips" style="margin-top:14px;">
+                  <span class="badge normal"><span class="dot"></span>Pulse captured</span>
+                  <span class="badge normal"><span class="dot"></span>SpO₂ captured</span>
+                  <span class="badge primary">BP in progress</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="vitals-grid">
+              <div class="vital">
+                <div class="vh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>Blood pressure</div>
+                <div class="vv">128<small>/82 mmHg</small></div>
+                <span class="badge borderline">Slightly high</span>
+              </div>
+              <div class="vital">
+                <div class="vh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.4 3-5.5A5.5 5.5 0 0 0 12 5 5.5 5.5 0 0 0 2 8.5c0 2.1 1.5 4 3 5.5l7 7z"/></svg>Pulse</div>
+                <div class="vv">74<small>bpm</small></div>
+                <span class="badge normal"><span class="dot"></span>Normal</span>
+              </div>
+              <div class="vital">
+                <div class="vh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>SpO₂</div>
+                <div class="vv">98<small>%</small></div>
+                <span class="badge normal"><span class="dot"></span>Normal</span>
+              </div>
+              <div class="vital">
+                <div class="vh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/></svg>Temperature</div>
+                <div class="vv">98.4<small>°F</small></div>
+                <span class="badge normal"><span class="dot"></span>Normal</span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:14px; margin-top:22px;">
+              <button class="kbtn kbtn-primary" data-go="k-services">Save to my record</button>
+              <button class="kbtn kbtn-outline" data-go="k-tele">Discuss with a doctor</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 5. REPORT ===== -->
+        <section class="kscreen" id="k-report">
+          <div class="kpad">
+            <div class="khead">
+              <div>
+                <h2>Comprehensive Health Panel</h2>
+                <div class="ksub">Collected 06 Jun 2026 · ZiffyHealth Diagnostics · 33 results</div>
+              </div>
+              <button class="kbtn kbtn-ghost" data-go="k-services">← Services</button>
+            </div>
+
+            <div class="card pad" style="margin-bottom:16px;">
+              <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                <div class="avatar-lg">AD</div>
+                <div>
+                  <div class="strong" style="font-size:16px;">Asha Devi</div>
+                  <div class="muted small">46 years · Female · ZH-2026-0741 · ABHA 14-xxxx-xxxx-7290</div>
+                </div>
+                <div class="spacer" style="flex:1;"></div>
+                <div class="chips">
+                  <span class="badge normal">25 normal</span>
+                  <span class="badge alert">6 alert</span>
+                  <span class="badge critical">2 critical</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-bottom:18px;">
+              <div class="card-head"><h3>Flagged results</h3><span class="spacer"></span><span class="muted small">Reviewed by Dr. Anita Deshmukh</span></div>
+              <table class="table">
+                <thead><tr><th>Test</th><th>Value</th><th>Reference</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr class="clickable">
+                    <td class="name">HbA1c</td><td><span class="mono">6.9 %</span></td><td class="muted">4.0 – 5.6 %</td>
+                    <td><span class="badge borderline">High</span></td>
+                  </tr>
+                  <tr class="clickable">
+                    <td class="name">Vitamin D (25-OH)</td><td><span class="mono">11 ng/mL</span></td><td class="muted">30 – 100 ng/mL</td>
+                    <td><span class="badge critical">Critical low</span></td>
+                  </tr>
+                  <tr class="clickable">
+                    <td class="name">Fasting Glucose</td><td><span class="mono">118 mg/dL</span></td><td class="muted">70 – 100 mg/dL</td>
+                    <td><span class="badge alert">High</span></td>
+                  </tr>
+                  <tr class="clickable">
+                    <td class="name">Total Cholesterol</td><td><span class="mono">182 mg/dL</span></td><td class="muted">&lt; 200 mg/dL</td>
+                    <td><span class="badge normal">Normal</span></td>
+                  </tr>
+                  <tr class="clickable">
+                    <td class="name">Hemoglobin</td><td><span class="mono">12.8 g/dL</span></td><td class="muted">12.0 – 15.5 g/dL</td>
+                    <td><span class="badge normal">Normal</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display:flex; gap:14px;">
+              <button class="kbtn kbtn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print report
+              </button>
+              <button class="kbtn kbtn-outline">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+                E-mail to me
+              </button>
+              <button class="kbtn kbtn-ghost" data-go="k-services">Done</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== 6. TELEMEDICINE CALL ===== -->
+        <section class="kscreen" id="k-tele">
+          <div class="kpad">
+            <div class="khead">
+              <div>
+                <h2>Video consultation</h2>
+                <div class="ksub">Connected to the next available doctor · this call is private.</div>
+              </div>
+              <button class="kbtn kbtn-ghost" data-go="k-services">← Services</button>
+            </div>
+
+            <div class="row cols-12">
+              <div class="tele-stage">
+                <div class="tele-status"><span class="dot"></span>Connected · 02:18</div>
+                <div class="tele-who">
+                  <div class="av">AD</div>
+                  <div class="nm">Dr. Anita Deshmukh</div>
+                  <div class="sp">General Medicine · ZiffyHealth Clinic</div>
+                </div>
+                <div class="tele-pip">You · Asha</div>
+                <div class="tele-controls">
+                  <button class="tctl" title="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+                  <button class="tctl" title="Camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></button>
+                  <button class="tctl" title="Volume"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg></button>
+                  <button class="tctl leave" data-go="k-services"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a16 16 0 0 0 16 16l2.5-2.5-4-4-2.5 1.5a11 11 0 0 1-4.5-4.5L8.5 9.5l-4-4z"/></svg>End call</button>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-head"><h3>This consultation</h3><span class="spacer"></span><span class="badge normal"><span class="dot"></span>Live</span></div>
+                <div class="card-body">
+                  <div class="kv"><span class="k">Doctor</span><span class="v">Dr. Anita Deshmukh</span></div>
+                  <div class="kv"><span class="k">Specialty</span><span class="v">General Medicine</span></div>
+                  <div class="kv"><span class="k">Queue position</span><span class="v">Connected</span></div>
+                  <div class="kv"><span class="k">Duration</span><span class="v mono">02:18</span></div>
+                  <div class="divider"></div>
+                  <div class="label" style="margin-bottom:6px;">Shared with the doctor</div>
+                  <div class="muted small" style="margin-bottom:14px;">Today's vitals (BP 128/82, pulse 74, SpO₂ 98%) and your latest Comprehensive Health Panel are visible to Dr. Deshmukh.</div>
+                  <button class="kbtn kbtn-outline block" data-go="k-report">View my report</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ============ FOOTER ============ -->
+      <div class="kfoot">
+        <div class="who">
+          <div class="av">AD</div>
+          <div>
+            <div class="nm">Asha Devi</div>
+            <div class="mr">ZH-2026-0741 · session ends after 2 min idle</div>
+          </div>
+        </div>
+        <div class="spacer" style="flex:1;"></div>
+        <button class="kbtn kbtn-outline" data-go="k-services">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.4 2.6L3 8"/><path d="M3 3v5h5"/></svg>
+          Home
+        </button>
+        <button class="kbtn kbtn-ghost" data-go="k-attract">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>
+          End &amp; sign out
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <div class="kiosk-stand"></div>
+  <div class="kiosk-base"></div>
+</div>
+
+<script>
+  (function () {
+    var screens = document.querySelectorAll('.kscreen');
+    var stage = document.querySelector('.kstage');
+    function show(id) {
+      screens.forEach(function (s) { s.classList.toggle('active', s.id === id); });
+      if (stage) stage.scrollTop = 0;
+    }
+    document.querySelectorAll('[data-go]').forEach(function (el) {
+      el.addEventListener('click', function () { show(el.getAttribute('data-go')); });
+    });
+  })();
+</script>
+</body>
+</html>

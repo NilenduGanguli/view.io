@@ -10,13 +10,14 @@ Public preview of the ZiffyHealth **green design system**: the clinical report a
 | **Demo hub** | `index.html` |
 | Patient app | `apps/patient-app.html` |
 | Doctor app | `apps/doctor-app.html` |
+| Self-service kiosk | `apps/kiosk-app.html` |
 | Interactive report | `design/report-final.html` |
 | Comprehensive report (A4) | `design/static-report.html` |
 | Individual / device report | `design/individual-report.html` |
 | Prescription (Rx, A4) | `design/prescription.html` |
 | Design system / palette | `design-system/swatch.html`, `design-system/tokens.css` |
 
-Old URLs preserved: `static.html` → comprehensive report, `prescription.html` → prescription (redirects).
+Old URLs preserved: `static.html` → comprehensive report, `prescription.html` → prescription, `kiosk.html` → self-service kiosk (redirects).
 
 ## Notes
 - Reference ranges are sourced from the **KIN Diagnostics** reference sheet.
